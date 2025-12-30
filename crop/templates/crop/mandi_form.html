@@ -1,0 +1,766 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Agri Sakthi - Weather & Mandi Finder</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main CSS -->
+  <style>
+    :root {
+      --green-main: #25b85a;
+      --green-dark: #1b8a43;
+      --orange: #ff8a3d;
+      --red: #ff4e4e;
+      --bg-beige: #f7f3ea;
+      --card-bg: #ffffff;
+      --text-main: #183029;
+      --muted: #6f7b7a;
+      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.08);
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-beige);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 32px 12px 40px;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* Generic cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 24px 24px 22px;
+      margin-bottom: 22px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 650;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    /* Location card */
+    .location-card {
+      background: linear-gradient(145deg, #ffffff, #f1fbf5);
+      border-radius: 30px;
+    }
+
+    .location-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(37, 184, 90, 0.12);
+      color: var(--green-dark);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .loc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .loc-field {
+      background: #f5faf7;
+      border-radius: 18px;
+      padding: 16px 18px;
+      border: 1px dashed rgba(27, 138, 67, 0.2);
+    }
+
+    .loc-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .loc-value {
+      font-size: 1.05rem;
+      font-weight: 650;
+    }
+
+    .location-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--green-main);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(37, 184, 90, 0.35);
+      transition: background 0.2s ease, transform 0.15s ease,
+                  box-shadow 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(27, 138, 67, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(27, 138, 67, 0.35);
+    }
+
+    .btn-spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-top-color: #ffffff;
+      animation: spin 0.9s linear infinite;
+    }
+
+    .helper-text {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* Weather overview */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.02rem;
+      font-weight: 650;
+      margin-bottom: 12px;
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .weather-card {
+      border-radius: 22px;
+      padding: 16px 18px;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      transform-origin: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: default;
+    }
+
+    .weather-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
+    }
+
+    .weather-icon {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .weather-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .weather-value {
+      font-size: 1.35rem;
+      font-weight: 650;
+    }
+
+    .weather-unit {
+      font-size: 0.9rem;
+      margin-left: 3px;
+      opacity: 0.85;
+    }
+
+    .weather-card.temperature {
+      background: linear-gradient(135deg, #ff9a3d, #ff6a54);
+    }
+
+    .weather-card.humidity {
+      background: linear-gradient(135deg, #3aa9ff, #006bff);
+    }
+
+    .weather-card.rainfall {
+      background: linear-gradient(135deg, #9b6bff, #5f3bff);
+    }
+
+    .weather-card.wind {
+      background: linear-gradient(135deg, #09c6ab, #04a5d3);
+    }
+
+    /* Disease risk */
+    .risk-card {
+      border-radius: 22px;
+      padding: 18px 18px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .risk-icon {
+      font-size: 1.4rem;
+      margin-top: 3px;
+    }
+
+    .risk-content-title {
+      font-weight: 650;
+      margin-bottom: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .risk-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    .risk-text {
+      font-size: 0.9rem;
+      color: #1b2a25;
+    }
+
+    .risk-safe {
+      background: #e8f9f0;
+      border: 1px solid rgba(37, 184, 90, 0.35);
+      color: #13753a;
+    }
+
+    .risk-medium {
+      background: #fff4e9;
+      border: 1px solid rgba(255, 166, 0, 0.35);
+      color: #b25c08;
+    }
+
+    .risk-high {
+      background: #ffe9e9;
+      border: 1px solid rgba(255, 78, 78, 0.42);
+      color: #b21818;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeSlideRight {
+      from {
+        opacity: 0;
+        transform: translateX(-14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .fade-slide-up {
+      animation: fadeSlideUp 1.4s ease-out forwards;
+    }
+
+    .fade-slide-right {
+      animation: fadeSlideRight 1.4s ease-out forwards;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none; }
+
+    /* Mandi form */
+    .mandi-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mandi-form label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mandi-form input {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    /* Mandi cards */
+    .mandi-results {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .market-card {
+      border-radius: 22px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .market-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .market-card-header {
+      background: linear-gradient(135deg, #1b8a43, #25b85a);
+      color: #ecfdf5;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .market-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .market-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .market-name {
+      font-size: 1rem;
+      font-weight: 650;
+    }
+
+    .market-rank {
+      margin-top: 2px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 0.72rem;
+    }
+
+    .market-header-right {
+      text-align: right;
+    }
+
+    .market-profit-label {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    .market-profit-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .market-card-body {
+      padding: 12px 16px 14px;
+      background: #fefcf7;
+      font-size: 0.86rem;
+    }
+
+    .market-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .market-label {
+      color: var(--muted);
+    }
+
+    .market-value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .market-risk-pill {
+      margin-top: 10px;
+      padding: 7px 10px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff4e5;
+      color: #b45309;
+    }
+
+    .market-risk-pill.loss {
+      background: #ffe4e6;
+      color: #b91c1c;
+    }
+
+    @media (max-width: 900px) {
+      .cards-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 20px 10px 28px; }
+      .card { padding: 18px 18px 16px; }
+      .loc-grid { grid-template-columns: 1fr; }
+      .cards-row { grid-template-columns: 1fr; }
+      .location-actions { align-items: flex-start; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-wrapper">
+
+    <!-- LOCATION CARD -->
+    <section class="card location-card">
+      <div class="location-pill">
+        <span>📍</span>
+        <span>Your Current Location</span>
+      </div>
+
+      <div class="loc-grid">
+        <div class="loc-field">
+          <div class="loc-label">Latitude</div>
+          <div id="lat-value" class="loc-value">--.--</div>
+        </div>
+        <div class="loc-field">
+          <div class="loc-label">Longitude</div>
+          <div id="lon-value" class="loc-value">--.--</div>
+        </div>
+      </div>
+
+      <div class="location-actions">
+        <button id="use-location-btn" class="btn-primary">
+          <span class="btn-icon"><i class="fa-solid fa-location-crosshairs"></i></span>
+          <span class="btn-text">Use My Current Location</span>
+          <span class="btn-spinner" style="display:none;"></span>
+        </button>
+        <p class="helper-text">
+          Allow location access to load live weather, disease risk, and mandi suggestions.
+        </p>
+      </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section id="weather-section" class="card hidden">
+      <div class="section-title">
+        <span>🌤️</span>
+        <span>Current Weather</span>
+      </div>
+
+      <div class="cards-row">
+        <div class="weather-card temperature fade-slide-up" style="animation-delay:0.05s;">
+          <div class="weather-icon"><i class="fa-solid fa-temperature-half"></i></div>
+          <div class="weather-label">Temperature</div>
+          <div class="weather-value">
+            <span id="temp">---</span>
+            <span class="weather-unit">°C</span>
+          </div>
+        </div>
+
+        <div class="weather-card humidity fade-slide-up" style="animation-delay:0.12s;">
+          <div class="weather-icon"><i class="fa-solid fa-droplet"></i></div>
+          <div class="weather-label">Humidity</div>
+          <div class="weather-value">
+            <span id="humidity">---</span>
+            <span class="weather-unit">%</span>
+          </div>
+        </div>
+
+        <div class="weather-card rainfall fade-slide-up" style="animation-delay:0.19s;">
+          <div class="weather-icon"><i class="fa-solid fa-cloud-rain"></i></div>
+          <div class="weather-label">Rainfall</div>
+          <div class="weather-value">
+            <span id="rain">---</span>
+            <span class="weather-unit">mm</span>
+          </div>
+        </div>
+
+        <div class="weather-card wind fade-slide-up" style="animation-delay:0.26s;">
+          <div class="weather-icon"><i class="fa-solid fa-wind"></i></div>
+          <div class="weather-label">Wind Speed</div>
+          <div class="weather-value">
+            <span id="wind">---</span>
+            <span class="weather-unit">m/s</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DISEASE RISK -->
+    <section id="risk-section" class="card hidden">
+      <div class="section-title">
+        <span>🛡️</span>
+        <span>High‑Risk Diseases</span>
+      </div>
+
+      <div id="risk-card" class="risk-card risk-safe fade-slide-right">
+        <div class="risk-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div class="risk-content-title">
+            <span id="risk-title">No high-risk diseases detected today.</span>
+            <span id="risk-badge" class="risk-badge">LOW RISK</span>
+          </div>
+
+          {% if risks %}
+            <ul id="disease-list" class="risk-list">
+              {% for r in risks %}
+                <li>
+                  <strong>{{ r.crop }}:</strong> {{ r.disease }}
+                  <br><em>Precaution:</em> {{ r.precaution }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p id="risk-text" class="risk-text">
+              Click “Use My Current Location” to check detailed disease risks.
+            </p>
+            <ul id="disease-list" class="risk-list" style="display:none;"></ul>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- MANDI FINDER -->
+    <section class="card">
+      <div class="section-title">
+        <span>🧺</span>
+        <span>Find the Best Mandi for Your Crop</span>
+      </div>
+
+      <form id="mandi-form" class="mandi-form">
+        <div class="form-grid">
+          <label>Latitude
+            <input type="text" id="lat" required>
+          </label>
+          <label>Longitude
+            <input type="text" id="lon" required>
+          </label>
+          <label>Crop
+            <input type="text" id="crop" required>
+          </label>
+          <label>Quantity (quintals)
+            <input type="number" id="quantity" required>
+          </label>
+        </div>
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Find Best Mandi</span>
+        </button>
+      </form>
+
+      <div id="results-container" class="mandi-results"></div>
+    </section>
+  </main>
+
+  <script>
+    const useLocationBtn = document.getElementById('use-location-btn');
+    const form = document.getElementById('mandi-form');
+    const resultsContainer = document.getElementById('results-container');
+
+    function setWeatherValues(data) {
+      document.getElementById('temp').innerText =
+        (data && typeof data.temp !== 'undefined') ? data.temp : '--';
+      document.getElementById('humidity').innerText =
+        (data && typeof data.humidity !== 'undefined') ? data.humidity : '--';
+      document.getElementById('rain').innerText =
+        (data && typeof data.rain !== 'undefined') ? data.rain : '--';
+      document.getElementById('wind').innerText =
+        (data && typeof data.wind !== 'undefined') ? data.wind : '--';
+    }
+
+    useLocationBtn.addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          document.getElementById('lat').value = lat;
+          document.getElementById('lon').value = lon;
+          document.getElementById('lat-value').textContent = lat.toFixed(6);
+          document.getElementById('lon-value').textContent = lon.toFixed(6);
+
+          fetch(`/get_weather/?lat=${lat}&lon=${lon}`)
+            .then(res => {
+              if (!res.ok) {
+                throw new Error('Weather API error: ' + res.status);
+              }
+              return res.json();
+            })
+            .then(data => {
+              // log once to see actual shape if debugging
+              console.log('weather data', data);
+
+              setWeatherValues(data);
+
+              const ul = document.getElementById('disease-list');
+              ul.style.display = 'block';
+              ul.innerHTML = '';
+              (data.risks || []).forEach(r => {
+                const li = document.createElement('li');
+                li.innerHTML =
+                  `<strong>${r.crop}:</strong> ${r.disease}<br><em>Precaution:</em> ${r.precaution}`;
+                ul.appendChild(li);
+              });
+              document.getElementById('risk-section').classList.remove('hidden');
+              document.getElementById('weather-section').classList.remove('hidden');
+            })
+            .catch(err => {
+              console.error('get_weather error', err);
+              setWeatherValues(null);
+              document.getElementById('weather-section').classList.remove('hidden');
+            });
+        });
+      } else {
+        alert("Geolocation not supported.");
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultsContainer.innerHTML = '';
+
+      const lat = document.getElementById('lat').value;
+      const lon = document.getElementById('lon').value;
+      const crop = document.getElementById('crop').value;
+      const quantity = document.getElementById('quantity').value;
+
+      try {
+        const res = await fetch("{% url 'find_markets' %}", {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({lat, lon, crop, quantity})
+        });
+        const data = await res.json();
+
+        let html = '';
+        data.result.forEach((m, idx) => {
+          const loss = parseFloat(m.profit) < 0;
+          html += `
+            <article class="market-card">
+              <header class="market-card-header">
+                <div class="market-header-left">
+                  <div class="market-icon"><i class="fa-solid fa-store"></i></div>
+                  <div>
+                    <div class="market-name">${m.market_name}</div>
+                    <div class="market-rank">#${idx + 1} option</div>
+                  </div>
+                </div>
+                <div class="market-header-right">
+                  <div class="market-profit-label">Expected Profit</div>
+                  <div class="market-profit-value">₹${m.profit}</div>
+                </div>
+              </header>
+              <div class="market-card-body">
+                <div class="market-row">
+                  <span class="market-label">Location</span>
+                  <span class="market-value">${m.location} • ${m.distance} km away</span>
+                </div>
+                <div class="market-row">
+                  <span class="market-label">Modal Price</span>
+                  <span class="market-value">₹${m.modal_price}</span>
+                </div>
+                <div class="market-row">
+                  <span class="market-label">Price Range</span>
+                  <span class="market-value">₹${m.min_price} – ₹${m.max_price}</span>
+                </div>
+                <div class="market-risk-pill ${loss ? 'loss' : ''}">
+                  ${loss ? 'High Risk · Loss at current price'
+                         : 'Medium Risk · Profitable at current price'}
+                </div>
+              </div>
+            </article>`;
+        });
+        resultsContainer.innerHTML = html || '<p>No mandi data available.</p>';
+
+      } catch (err) {
+        resultsContainer.innerHTML =
+          '<p style="color:red;">Error fetching mandi data.</p>';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

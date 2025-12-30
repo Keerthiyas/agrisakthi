@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgriSakthi – Government Schemes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind for hero + layout -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+  <!-- Poppins + card styles -->
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .wave-container {
+      position: relative;
+      background: linear-gradient(135deg, #0d1c15 0%, #22f549 100%);
+      min-height: 300px;
+    }
+
+    .wave-shape {
+      position: absolute;
+      bottom: 0.5px;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .wave-shape svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 258px;
+    }
+
+    .active-tab {
+      background-color: #1b4332 !important;
+      color: white !important;
+    }
+
+    /* Scheme cards (plain CSS, works with Tailwind layout) */
+    :root {
+      --green: #0b6b3a;
+      --green-soft: #f3faf5;
+      --card-border: #e5efe7;
+      --yellow: #ffc94d;
+      --text-main: #123326;
+      --text-muted: #6b7f73;
+      --radius-card: 18px;
+      --radius-pill: 999px;
+      --shadow-card: 0 18px 45px rgba(18, 51, 38, 0.12);
+      --transition: 0.25s ease;
+    }
+
+    .scheme-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 18px;
+    }
+    @media (max-width: 1024px) {
+  .scheme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .scheme-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+    .scheme-card {
+      background: #fff;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-card);
+      padding: 16px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;   /* ⭐ PUSHES BUTTONS DOWN */
+}
+.scheme-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  min-height: 40px;   /* keeps title height same */
+}
+
+
+    .scheme-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(18, 51, 38, 0.16);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: var(--green-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .card-title-block {
+      flex: 1;
+    }
+
+    .scheme-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      background: #eaf7ef;
+      color: var(--green);
+    }
+
+    .bookmark-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #f5f7f6;
+      color: #929c94;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .bookmark-btn.active {
+      background: #ffe58c;
+      color: #8a5c00;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .max-box {
+      background: #f4faf6;
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .max-label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .eligibility {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .benefits {
+      font-size: 13px;
+      margin-left: 18px;
+      color: var(--text-main);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      flex: 1;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      padding: 8px 0;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-show {
+      background: #ffffff;
+      border: 1px solid #e3e2d6;
+      color: #3b3a30;
+    }
+
+    .btn-show:hover {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #3b2b00;
+    }
+
+    .btn-apply {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 10px 26px rgba(11, 107, 58, 0.4);
+    }
+
+    .btn-apply:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    /* Modal + accordion (same as previous) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 15px;
+      width: min(620px, 94vw);
+      max-height: 100vh;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.4);
+      padding: 18px 20px 16px;
+      overflow-y: auto;
+      animation: fadeUp 0.25s ease-out;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+    }
+
+    .modal-close {
+      border: none;
+      background: #f2f4f3;
+      border-radius: 999px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    .modal-tag-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .modal-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #eaf7ef;
+      color: var(--green);
+    }
+
+    .modal-pill-benefit {
+      background: #f4faf6;
+      color: #3b3a30;
+    }
+
+    .modal-footer {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modal-footer a {
+      text-decoration: none;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .accordion {
+      margin-top: 10px;
+      border-top: 1px solid #ecf0ed;
+    }
+
+    .acc-header {
+      width: 100%;
+      border: none;
+      background: #ffffff;
+      padding: 15px 0;
+      border-bottom: 1px solid #ecf0ed;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .acc-header span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .acc-icon {
+      font-size: 14px;
+      color: #7b8a82;
+    }
+
+    .acc-icon-green { color: #1a8c5b; }
+    .acc-icon-blue  { color: #3c76d8; }
+    .acc-icon-yellow{ color: #c69203; }
+
+    .acc-arrow {
+      font-size: 12px;
+      color: #7b8a82;
+      transition: transform 0.75s ease;
+    }
+
+    .acc-header.active .acc-arrow {
+      transform: rotate(180deg);
+    }
+
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      font-size: 13px;
+      transition: max-height 0.22s ease;
+    }
+
+    .acc-body.open {
+      max-height: 600px;
+      padding: 6px 0 10px;
+    }
+
+    .acc-body ul,
+    .acc-body ol {
+      margin-left: 20px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- HEADER -->
+<header class="absolute top-0 w-full z-10 px-8 py-4 flex justify-between items-center">
+  <div class="flex items-center gap-2">
+    <div class="bg-white/20 p-2 rounded-full">
+      <i class="fas fa-leaf text-white text-xl"></i>
+    </div>
+    <span class="text-white font-bold text-xl tracking-wide">AgriSakthi</span>
+  </div>
+  <div class="flex gap-2">
+    <button class="bg-white/20 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-white/30 transition">English</button>
+    <button class="text-white/80 px-4 py-1.5 rounded-full text-sm font-medium hover:text-white transition">தமிழ்</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="wave-container flex flex-col items-center justify-center text-center px-4 pb-32">
+  <div class="mb-6 inline-flex items-center gap-2 bg-white/10 px-4 py-1 rounded-full border border-white/20">
+    <i class="fas fa-sparkles text-yellow-300 text-xs"></i>
+    <span class="text-white text-xs font-semibold uppercase tracking-wider">AgriSakthi</span>
+  </div>
+  <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
+    Government Schemes for <br> Farmers
+  </h1>
+  <p class="text-white/90 text-lg mb-8">
+    Empowering Indian Agriculture with Smart AI Assistance
+  </p>
+
+  <div class="relative w-full max-w-2xl">
+    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+    <input id="searchInput" type="text"
+           placeholder="Search schemes by name, crop, or benefit..."
+           class="w-full pl-12 pr-4 py-4 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400">
+  </div>
+
+  <div class="wave-shape">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="#f9fafb"
+            d="M0,224L80,213.3C160,203,320,181,480,186.7C640,192,800,224,960,234.7C1120,245,1280,235,1360,229.3L1440,224L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- MAIN area (tabs + filters + cards) -->
+<main class="max-w-7xl mx-auto px-8 -mt-16 relative z-20 pb-10">
+  <!-- Tabs -->
+  <div class="flex flex-wrap mb-9 gap-3">
+    <button class="scheme-tab active-tab flex items-center gap-2 px-4 py-2.5 h-8 rounded-3xl border bg-white shadow-sm transition"
+            data-category="">
+      <i class="fas fa-th-large"></i> All Schemes
+    </button>
+    <button class="scheme-tab flex items-center gap-2 px-4 py-2.5 h-8 rounded-3xl border bg-white shadow-sm hover:bg-gray-50 transition"
+            data-category="Income Support">
+      <i class="fas fa-wallet"></i> Income Support
+    </button>
+    <button class="scheme-tab flex items-center gap-2 px-4 py-2.5 h-8 rounded-3xl border bg-white shadow-sm hover:bg-gray-50 transition"
+            data-category="Insurance">
+      <i class="fas fa-shield-alt"></i> Insurance
+    </button>
+    <button class="scheme-tab flex items-center gap-2 px-4 py-2.5 h-8 rounded-3xl border bg-white shadow-sm hover:bg-gray-50 transition"
+            data-category="Credit/Loan">
+      <i class="fas fa-credit-card"></i> Credit/Loan
+    </button>
+    <button class="scheme-tab flex items-center gap-2 px-4 py-2.5 h-8 rounded-3xl border bg-white shadow-sm hover:bg-gray-50 transition"
+            data-category="Subsidy">
+      <i class="fas fa-gift"></i> Subsidy
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end bg-white/50 p-6 rounded-2xl mb-6">
+    <div>
+      <label class="block text-gray-500 text-sm mb-2">Farmer Type</label>
+      <select id="farmerType"
+              class="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+        <option value="">All Farmers</option>
+        <option value="small">Small Farmer</option>
+        <option value="marginal">Marginal Farmer</option>
+        <option value="tenant">Tenant Farmer</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-gray-500 text-sm mb-2">State</label>
+      <select id="stateFilter"
+              class="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none">
+        <option value="">All States</option>
+        <option value="TN">Tamil Nadu</option>
+        <option value="KA">Karnataka</option>
+        <option value="KL">Kerala</option>
+      </select>
+    </div>
+    <div>
+      <div class="flex justify-between mb-2">
+        <label class="text-gray-500 text-sm">
+          Land Size (Hectares): <span id="landVal">2</span> ha
+        </label>
+        <button class="text-sm text-gray-400 hover:text-gray-600" id="resetFiltersBtn">
+          Clear Filters
+        </button>
+      </div>
+      <input type="range" min="0" max="10" value="2" id="landRange"
+             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-700">
+    </div>
+    <button onclick="findBestScheme()"
+  class="bg-green-700 text-white px-6 py-2 rounded-xl shadow">
+  🤖 Find Best Scheme for Me
+</button>
+
+  </div>
+
+  <!-- Scheme cards -->
+  <section class="scheme-grid" id="cardGrid">
+    <button onclick="askAboutScheme('PM-KISAN')"
+  class="text-sm text-blue-600 underline">
+  🤖 Ask AI about this scheme
+</button>
+
+  </section>
+</main>
+
+<!-- Chat button -->
+<button onclick="toggleChat()"
+  class="bg-green-800 text-white p-4 rounded-full shadow-2xl hover:bg-green-900 transition-transform hover:scale-110">
+  <i class="fas fa-comment-dots text-2xl"></i>
+</button>
+
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle"></h3>
+      <button class="modal-close" id="modalClose">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-tag-row">
+      <span class="modal-pill" id="modalCategory"></span>
+      <span class="modal-pill modal-pill-benefit" id="modalBenefit"></span>
+    </div>
+
+    <div class="accordion">
+      <button class="acc-header active" data-acc="elig">
+        <span>
+          <i class="fa-solid fa-circle-check acc-icon acc-icon-green"></i>
+          Detailed Eligibility
+        </span>
+        <i class="fa-solid fa-chevron-up acc-arrow"></i>
+      </button>
+      <div class="acc-body open" id="acc-elig">
+        <ul id="modalEligibilityList"></ul>
+      </div>
+
+      <button class="acc-header" data-acc="docs">
+        <span>
+          <i class="fa-solid fa-file-lines acc-icon acc-icon-blue"></i>
+          Required Documents
+        </span>
+        <i class="fa-solid fa-chevron-down acc-arrow"></i>
+      </button>
+      <div class="acc-body" id="acc-docs">
+        <ul id="modalDocs"></ul>
+      </div>
+
+      <button class="acc-header" data-acc="process">
+        <span>
+          <i class="fa-solid fa-list-check acc-icon acc-icon-yellow"></i>
+          Application Process
+        </span>
+        <i class="fa-solid fa-chevron-down acc-arrow"></i>
+      </button>
+      <div class="acc-body" id="acc-process">
+        <ol id="modalProcess"></ol>
+      </div>
+
+      <button class="acc-header" data-acc="faqs">
+        <span>
+          <i class="fa-solid fa-circle-question acc-icon"></i>
+          Frequently Asked Questions
+        </span>
+        <i class="fa-solid fa-chevron-down acc-arrow"></i>
+      </button>
+      <div class="acc-body" id="acc-faqs">
+        <ul id="modalFaqs"></ul>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <a href="#" target="_blank" id="modalLink">
+        Visit Official Website <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Demo scheme data (same structure as before)
+  const schemes = [
+    {
+      id: "pmkisan",
+      name: "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)",
+      category: "Income Support",
+      maxBenefit: "₹6,000/year",
+      eligibilityShort: "All landholding farmer families with cultivable land.",
+      keyBenefits: [
+        "₹6,000 annual income support in 3 installments.",
+        "Direct bank transfer to farmer account."
+      ],
+      eligibilityDetails: [
+        "Must be a landholding farmer family.",
+        "Land records should be updated in the revenue records.",
+        "Not applicable to institutional landholders.",
+        "Not for income tax payers."
+      ],
+      documents: [
+        "Aadhaar card",
+        "Bank passbook",
+        "Land ownership records",
+        "Mobile number"
+      ],
+      process: [
+        "Visit nearest CSC / agriculture office or register on PM-KISAN portal.",
+        "Fill in Aadhaar, land details, and bank account.",
+        "Submit application and documents for verification.",
+        "On approval, installments are credited directly to the bank account."
+      ],
+      faqs: [
+        "Installments are usually paid three times a year.",
+        "Aadhaar seeding with bank account is mandatory."
+      ],
+      icon: "fa-rectangle-list",
+      link: "https://pmkisan.gov.in/",
+      farmerTypes: ["small", "marginal"],
+      states: ["ALL"],
+      landRange: "lt5"
+    },
+    {
+      id: "pmfby",
+      name: "PMFBY (Pradhan Mantri Fasal Bima Yojana)",
+      category: "Insurance",
+      maxBenefit: "Full crop value",
+      eligibilityShort: "All farmers growing notified crops in notified areas.",
+      keyBenefits: [
+        "Insurance coverage against yield losses.",
+        "Low premium rates (2% for Kharif, 1.5% for Rabi)."
+      ],
+      eligibilityDetails: [
+        "All farmers including sharecroppers and tenant farmers.",
+        "Crop must be a notified crop in a notified area.",
+        "Premium share to be paid before cut‑off date."
+      ],
+      documents: [
+        "Aadhaar card",
+        "Land / lease documents",
+        "Bank account details",
+        "Sowing certificate (if required by state)"
+      ],
+      process: [
+        "Approach bank / insurance company / CSC in your area.",
+        "Submit proposal form with crop, area, and season details.",
+        "Pay farmer share of premium.",
+        "Receive policy / cover note and keep safely."
+      ],
+      faqs: [
+        "Claims are paid directly to the farmer's bank account.",
+        "Covers major natural calamities and localised risks as per guidelines."
+      ],
+      icon: "fa-shield-halved",
+      link: "https://pmfby.gov.in/",
+      farmerTypes: ["small", "marginal", "tenant"],
+      states: ["ALL"],
+      landRange: "any"
+    },
+    {
+  id: "kcc",
+  name: "KCC (Kisan Credit Card)",
+  category: "Credit",
+  maxBenefit: "Up to ₹3,00,000 at low interest",
+  eligibilityShort: "Farmers engaged in crop production and allied activities.",
+  keyBenefits: [
+    "Short-term credit at subsidized interest rates.",
+    "Interest subvention up to 2–4%."
+  ],
+  eligibilityDetails: [
+    "Must be an active farmer.",
+    "Applicable for crop cultivation, animal husbandry, fisheries.",
+    "Valid land or lease documents required."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Land records / lease agreement",
+    "Bank account details",
+    "Passport size photo"
+  ],
+  process: [
+    "Visit nearest bank branch.",
+    "Submit KCC application form.",
+    "Verification of documents.",
+    "Card issued and credit limit activated."
+  ],
+  faqs: [
+    "Interest subsidy available for timely repayment.",
+    "Card can be used like a debit card."
+  ],
+  icon: "fa-credit-card",
+  link: "https://www.myscheme.gov.in/schemes/kcc",
+  farmerTypes: ["small", "marginal", "tenant"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "soilhealth",
+  name: "Soil Health Card Scheme",
+  category: "Soil Management",
+  maxBenefit: "Free soil testing",
+  eligibilityShort: "All farmers across India.",
+  keyBenefits: [
+    "Free soil testing every 2 years.",
+    "Crop-wise fertilizer recommendations."
+  ],
+  eligibilityDetails: [
+    "Open to all farmers.",
+    "Soil sample must be provided."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Land details",
+    "Mobile number"
+  ],
+  process: [
+    "Submit soil sample at agriculture office.",
+    "Laboratory testing of soil.",
+    "Receive Soil Health Card with recommendations."
+  ],
+  faqs: [
+    "Helps reduce fertilizer cost.",
+    "Improves soil fertility and yield."
+  ],
+  icon: "fa-seedling",
+  link: "https://soilhealth.dac.gov.in/",
+  farmerTypes: ["small", "marginal", "large"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "pmksy",
+  name: "PMKSY (Pradhan Mantri Krishi Sinchayee Yojana)",
+  category: "Irrigation",
+  maxBenefit: "Subsidy up to 55%",
+  eligibilityShort: "Farmers adopting irrigation systems.",
+  keyBenefits: [
+    "Subsidy for drip and sprinkler irrigation.",
+    "Water use efficiency improvement."
+  ],
+  eligibilityDetails: [
+    "Must own or lease agricultural land.",
+    "Installation through approved vendors."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Land documents",
+    "Bank account details"
+  ],
+  process: [
+    "Apply through state agriculture department.",
+    "Field inspection and approval.",
+    "Install irrigation system.",
+    "Receive subsidy in bank account."
+  ],
+  faqs: [
+    "Supports water conservation.",
+    "Reduces irrigation costs."
+  ],
+  icon: "fa-water",
+  link: "https://pmksy.gov.in/",
+  farmerTypes: ["small", "marginal"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "pmfme",
+  name: "PMFME (Formalisation of Micro Food Processing Enterprises)",
+  category: "Food Processing",
+  maxBenefit: "Credit-linked subsidy up to ₹10 lakh",
+  eligibilityShort: "Small food processing entrepreneurs and farmers.",
+  keyBenefits: [
+    "35% subsidy for food processing units.",
+    "Skill training and branding support."
+  ],
+  eligibilityDetails: [
+    "Individual or SHG or FPO.",
+    "Project-based approval required."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Project report",
+    "Bank account details"
+  ],
+  process: [
+    "Apply through PMFME portal.",
+    "Submit project proposal.",
+    "Bank loan approval.",
+    "Receive subsidy after verification."
+  ],
+  faqs: [
+    "Promotes local food enterprises.",
+    "Encourages value addition."
+  ],
+  icon: "fa-industry",
+  link: "https://pmfme.mofpi.gov.in/",
+  farmerTypes: ["small", "marginal"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "enam",
+  name: "e-NAM (National Agriculture Market)",
+  category: "Marketing",
+  maxBenefit: "Better price discovery",
+  eligibilityShort: "Farmers selling produce in mandis.",
+  keyBenefits: [
+    "Online trading platform.",
+    "Transparent price discovery."
+  ],
+  eligibilityDetails: [
+    "Farmer must be registered in mandi.",
+    "Produce should be tradable on e-NAM."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Bank account",
+    "Mobile number"
+  ],
+  process: [
+    "Register on e-NAM portal.",
+    "Bring produce to mandi.",
+    "Participate in online auction.",
+    "Receive payment digitally."
+  ],
+  faqs: [
+    "Reduces middlemen.",
+    "Payments are fast and secure."
+  ],
+  icon: "fa-store",
+  link: "https://www.enam.gov.in/",
+  farmerTypes: ["small", "marginal", "large"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "fpo",
+  name: "Formation & Promotion of FPOs",
+  category: "Farmer Groups",
+  maxBenefit: "Up to ₹15 lakh support",
+  eligibilityShort: "Farmer Producer Organizations.",
+  keyBenefits: [
+    "Financial assistance for FPO formation.",
+    "Market and credit linkage support."
+  ],
+  eligibilityDetails: [
+    "Minimum 300 farmers (100 in hilly areas).",
+    "Must be registered as FPO."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Farmer member list",
+    "Bank account"
+  ],
+  process: [
+    "Register FPO.",
+    "Apply through implementing agency.",
+    "Receive financial and training support."
+  ],
+  faqs: [
+    "Encourages collective farming.",
+    "Improves farmer income."
+  ],
+  icon: "fa-users",
+  link: "https://sfacindia.com/",
+  farmerTypes: ["small", "marginal"],
+  states: ["ALL"],
+  landRange: "any"
+},
+
+{
+  id: "rythu",
+  name: "Rythu Bandhu Scheme",
+  category: "Income Support",
+  maxBenefit: "₹10,000 per acre per year",
+  eligibilityShort: "Farmers in Telangana.",
+  keyBenefits: [
+    "Direct investment support.",
+    "Paid before crop season."
+  ],
+  eligibilityDetails: [
+    "Must be land-owning farmer in Telangana.",
+    "Land records updated."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Land documents",
+    "Bank account"
+  ],
+  process: [
+    "Automatic enrollment through land records.",
+    "Amount credited to bank account."
+  ],
+  faqs: [
+    "Paid twice a year.",
+    "No application required."
+  ],
+  icon: "fa-hand-holding-dollar",
+  link: "https://rythubandhu.telangana.gov.in/",
+  farmerTypes: ["small", "marginal"],
+  states: ["TELANGANA"],
+  landRange: "any"
+},
+
+{
+  id: "kalia",
+  name: "KALIA Scheme",
+  category: "Income Support",
+  maxBenefit: "₹10,000 per family",
+  eligibilityShort: "Small & marginal farmers in Odisha.",
+  keyBenefits: [
+    "Financial assistance for cultivation.",
+    "Support for landless agricultural laborers."
+  ],
+  eligibilityDetails: [
+    "Resident of Odisha.",
+    "Small or marginal farmer."
+  ],
+  documents: [
+    "Aadhaar card",
+    "Land records",
+    "Bank account"
+  ],
+  process: [
+    "Apply through state portal.",
+    "Verification by authorities.",
+    "Amount credited to bank account."
+  ],
+  faqs: [
+    "Covers farmers and laborers.",
+    "Seasonal assistance provided."
+  ],
+  icon: "fa-tractor",
+  link: "https://kalia.odisha.gov.in/",
+  farmerTypes: ["small", "marginal", "landless"],
+  states: ["ODISHA"],
+  landRange: "lt5"
+}
+
+  ];
+
+  const grid = document.getElementById("cardGrid");
+  const searchInput = document.getElementById("searchInput");
+  const farmerTypeSel = document.getElementById("farmerType");
+  const stateSel = document.getElementById("stateFilter");
+  const landRange = document.getElementById("landRange");
+  const landVal = document.getElementById("landVal");
+  const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+  const schemeTabs = document.querySelectorAll(".scheme-tab");
+
+  function renderCards(list) {
+    grid.innerHTML = "";
+    list.forEach(s => {
+      const card = document.createElement("article");
+      card.className = "scheme-card";
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="card-icon">
+            <i class="fa-solid ${s.icon}"></i>
+          </div>
+          <div class="card-title-block">
+            <div class="scheme-name">${s.name}</div>
+            <span class="tag">${s.category}</span>
+          </div>
+          <button class="bookmark-btn" data-bookmark="${s.id}">
+            <i class="fa-regular fa-star"></i>
+          </button>
+        </div>
+        <div class="max-box">
+          <span class="max-label">Maximum Benefit</span>
+          ${s.maxBenefit}
+        </div>
+        <div>
+          <div class="section-label">Eligibility</div>
+          <p class="eligibility">${s.eligibilityShort}</p>
+        </div>
+        <div>
+          <div class="section-label">Key Benefits</div>
+          <ul class="benefits">
+            ${s.keyBenefits.map(b => `<li>${b}</li>`).join("")}
+          </ul>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-show" data-show="${s.id}">
+            Show More
+          </button>
+          <button class="btn btn-apply" data-apply="${s.id}">
+            Apply Now <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function filterSchemes() {
+    const q = searchInput.value.toLowerCase().trim();
+    const farmerType = farmerTypeSel.value;
+    const state = stateSel.value;
+    const land = Number(landRange.value || 0);
+
+    const activeTab = document.querySelector(".scheme-tab.active-tab");
+    const category = activeTab?.dataset.category || "";
+
+    const list = schemes.filter(s => {
+      let ok = true;
+      if (q) {
+        const hay = (s.name + " " + s.eligibilityShort + " " + s.keyBenefits.join(" ")).toLowerCase();
+        if (!hay.includes(q)) ok = false;
+      }
+      if (category && s.category !== category) ok = false;
+      if (farmerType && !s.farmerTypes.includes(farmerType)) ok = false;
+      if (state && !(s.states.includes("ALL") || s.states.includes(state))) ok = false;
+
+      if (land <= 2 && !(s.landRange === "lt5" || s.landRange === "any")) ok = false;
+
+      return ok;
+    });
+
+    renderCards(list);
+  }
+
+  // initial
+  renderCards(schemes);
+
+  // Search + filters
+  searchInput.addEventListener("input", filterSchemes);
+  [farmerTypeSel, stateSel].forEach(sel => sel.addEventListener("change", filterSchemes));
+  landRange.addEventListener("input", e => {
+    landVal.textContent = e.target.value;
+    filterSchemes();
+  });
+  resetFiltersBtn.addEventListener("click", () => {
+    farmerTypeSel.value = "";
+    stateSel.value = "";
+    landRange.value = 2;
+    landVal.textContent = 2;
+    searchInput.value = "";
+    schemeTabs.forEach(t => t.classList.remove("active-tab"));
+    document.querySelector('.scheme-tab[data-category=""]').classList.add("active-tab");
+    filterSchemes();
+  });
+
+  schemeTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      schemeTabs.forEach(t => t.classList.remove("active-tab"));
+      tab.classList.add("active-tab");
+      filterSchemes();
+    });
+  });
+
+  // Modal
+  const backdrop = document.getElementById("modalBackdrop");
+  const modalClose = document.getElementById("modalClose");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalCategory = document.getElementById("modalCategory");
+  const modalBenefit = document.getElementById("modalBenefit");
+  const modalEligibilityList = document.getElementById("modalEligibilityList");
+  const modalDocs = document.getElementById("modalDocs");
+  const modalProcess = document.getElementById("modalProcess");
+  const modalFaqs = document.getElementById("modalFaqs");
+  const modalLink = document.getElementById("modalLink");
+
+  function openModal(scheme) {
+    modalTitle.textContent = scheme.name;
+    modalCategory.textContent = scheme.category;
+    modalBenefit.textContent = scheme.maxBenefit;
+    modalEligibilityList.innerHTML = scheme.eligibilityDetails.map(i => `<li>${i}</li>`).join("");
+    modalDocs.innerHTML = scheme.documents.map(d => `<li>${d}</li>`).join("");
+    modalProcess.innerHTML = scheme.process.map(p => `<li>${p}</li>`).join("");
+    modalFaqs.innerHTML = scheme.faqs.map(f => `<li>${f}</li>`).join("");
+    modalLink.href = scheme.link;
+
+    document.querySelectorAll(".acc-header").forEach(h => h.classList.remove("active"));
+    document.querySelectorAll(".acc-body").forEach(b => b.classList.remove("open"));
+    document.querySelector('.acc-header[data-acc="elig"]').classList.add("active");
+    document.getElementById("acc-elig").classList.add("open");
+
+    backdrop.classList.add("open");
+  }
+
+  modalClose.addEventListener("click", () => backdrop.classList.remove("open"));
+  backdrop.addEventListener("click", e => {
+    if (e.target === backdrop) backdrop.classList.remove("open");
+  });
+
+  document.addEventListener("click", e => {
+    const header = e.target.closest(".acc-header");
+    if (!header) return;
+    const id = header.dataset.acc;
+    const body = document.getElementById(`acc-${id}`);
+    const isOpen = body.classList.contains("open");
+
+    document.querySelectorAll(".acc-header").forEach(h => h.classList.remove("active"));
+    document.querySelectorAll(".acc-body").forEach(b => b.classList.remove("open"));
+
+    if (!isOpen) {
+      header.classList.add("active");
+      body.classList.add("open");
+    }
+  });
+
+  // Card events (delegation)
+  grid.addEventListener("click", e => {
+    const showId = e.target.closest("[data-show]")?.dataset.show;
+    const applyId = e.target.closest("[data-apply]")?.dataset.apply;
+    const bookmarkBtn = e.target.closest("[data-bookmark]");
+
+    if (showId) {
+      const scheme = schemes.find(s => s.id === showId);
+      if (scheme) openModal(scheme);
+    } else if (applyId) {
+      const scheme = schemes.find(s => s.id === applyId);
+      if (scheme?.link) window.open(scheme.link, "_blank");
+    } else if (bookmarkBtn) {
+      bookmarkBtn.classList.toggle("active");
+      bookmarkBtn.innerHTML = bookmarkBtn.classList.contains("active")
+        ? '<i class="fa-solid fa-star"></i>'
+        : '<i class="fa-regular fa-star"></i>';
+    }
+  });
+
+async function autoDetectState() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+      );
+      const data = await res.json();
+
+      const detectedState = data.address.state || "";
+      const stateMap = {
+        "Tamil Nadu": "TN",
+        "Karnataka": "KA",
+        "Kerala": "KL",
+        "Telangana": "TELANGANA",
+        "Odisha": "ODISHA"
+      };
+
+      const code = stateMap[detectedState];
+      if (code) {
+        stateSel.value = code;
+        filterSchemes();   // 🔥 auto refresh cards
+      }
+    } catch (e) {
+      console.log("State detect failed");
+    }
+  });
+}
+
+autoDetectState();
+function toggleChat() {
+  document.getElementById("chatbot").classList.toggle("hidden");
+}
+
+function addMsg(sender, text) {
+  const box = document.getElementById("chatBody");
+  box.innerHTML += `<div><b>${sender}:</b> ${text}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addMsg("You", msg);
+  input.value = "";
+
+  const res = await fetch("/chatbot/", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      message: msg,
+      state: stateSel.value,
+      land: landRange.value,
+      farmerType: farmerTypeSel.value
+    })
+  });
+
+  const data = await res.json();
+  addMsg("AI", data.reply);
+}
+function checkEligibility(scheme) {
+  if (
+    (scheme.states.includes("ALL") || scheme.states.includes(stateSel.value)) &&
+    (scheme.farmerTypes.includes(farmerTypeSel.value)) &&
+    (scheme.landRange === "any" ||
+     (scheme.landRange === "lt5" && landRange.value <= 5))
+  ) {
+    return "eligible";
+  }
+  return "not";
+}
+async function findBestScheme() {
+  const res = await fetch("/best-scheme/", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      state: stateSel.value,
+      land: landRange.value,
+      farmerType: farmerTypeSel.value
+    })
+  });
+
+  const data = await res.json();
+  alert(data.reply);
+}
+
+async function askAboutScheme(name) {
+  const res = await fetch("/ask-scheme/", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ scheme: name })
+  });
+
+  const data = await res.json();
+  alert(data.reply);
+}
+
+
+
+</script>
+<div id="chatbot" class="fixed bottom-24 right-6 w-80 bg-white rounded-2xl shadow-2xl hidden flex-col z-40">
+  <div class="bg-green-800 text-white p-3 rounded-t-2xl font-semibold">
+    Agri AI Assistant 🌾
+  </div>
+
+  <div id="chatBody" class="p-3 h-64 overflow-y-auto text-sm space-y-2"></div>
+
+  <div class="flex p-2 border-t gap-2">
+    <input id="chatInput" class="flex-1 border rounded-full px-3 py-1 text-sm"
+           placeholder="Ask about schemes..." />
+    <button onclick="sendChat()" class="bg-green-700 text-white px-4 rounded-full">
+      Send
+    </button>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriSakthi Chatbot</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        #chat { width: 100%; height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        .user { color: green; margin-bottom: 10px; }
+        .bot { color: blue; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<h2>🌾 AgriSakthi Chatbot</h2>
+
+<div id="chat"></div>
+<br>
+
+<input id="message" type="text" placeholder="Ask your question..." style="width:70%;">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+function sendMessage() {
+    let msg = document.getElementById("message").value;
+    if (!msg) return;
+
+    document.getElementById("chat").innerHTML += `<div class='user'>You: ${msg}</div>`;
+
+    fetch("/chat/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("chat").innerHTML += `<div class='bot'>Bot: ${data.reply}</div>`;
+        document.getElementById("message").value = "";
+        document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+    })
+}
+</script>
+
+</body>
+</html>

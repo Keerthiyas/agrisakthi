@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CropWise AI – Recommendations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-main: #2b7a3f;
+      --bg-main: #f9f6ef;
+      --card-bg: #ffffff;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: #14532d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-size: 22px;
+      box-shadow: 0 10px 25px rgba(22, 101, 52, 0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .brand-text span {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .page {
+      padding: 30px 40px 40px;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    /* Uploaded image card */
+    .image-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 20px 22px 18px;
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+
+    .image-card img {
+      max-width: 260px;
+      border-radius: 16px;
+      border: 2px solid #4caf50;
+    }
+
+    .image-card-text {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .image-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    /* Main 3 cards row */
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.16);
+      background: #fffef9;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .pill {
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    /* Weed Detection */
+    .weed-note {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .weed-item {
+      border-radius: var(--radius-md);
+      padding: 14px 16px 12px;
+      background: #ecfdf3;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .weed-item.warning {
+      background: #fff7ed;
+    }
+
+    .weed-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .weed-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .weed-icon-ok,
+    .weed-icon-warn {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .weed-icon-ok {
+      background: #bbf7d0;
+      color: #166534;
+    }
+
+    .weed-icon-warn {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .weed-name {
+      font-weight: 500;
+    }
+
+    .weed-impact {
+      font-size: 13px;
+      color: #15803d;
+    }
+
+    .weed-impact.moderate {
+      color: #b45309;
+    }
+
+    .weed-bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-top: 4px;
+      position: relative;
+    }
+
+    .weed-fill {
+      height: 100%;
+      background: #15803d;
+      border-radius: inherit;
+    }
+
+    .weed-fill.secondary {
+      background: #b45309;
+    }
+
+    .weed-percent {
+      position: absolute;
+      right: 6px;
+      top: -20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Soil & Field */
+    .soil-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .soil-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .soil-card {
+      border-radius: 16px;
+      background: #f9fafb;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .soil-card.blue { background: #c7e1f5; }
+    .soil-card.orange { background: #eeddd1; }
+    .soil-card.green { background: #d1fae5; }
+    .soil-card.sandal { background: #f4e1c1; }
+
+    .soil-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .soil-label-icon { font-size: 14px; }
+
+    .soil-value-big {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .soil-value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Weather card – NO 5‑day forecast now */
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    .weather-icon-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: #0ea5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e0f2fe;
+      font-size: 32px;
+    }
+
+    .weather-temp-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .weather-temp {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .weather-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .weather-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .metric-card {
+      border-radius: 16px;
+      background: #d6e2ee;
+      padding: 10px 10px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* Top recommended crops */
+    .recommended-section {
+      margin-top: 32px;
+    }
+
+    .rec-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .rec-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .rec-card {
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      color: #0f172a;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      background: #f2faf6;
+    }
+
+    .rec-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .rec-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rec-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .rec-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .rec-badge {
+      margin-top: 2px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 11px;
+      color: #374151;
+    }
+
+    .rec-right { text-align: right; }
+
+    .rec-score {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .rec-score-label {
+      font-size: 11px;
+      color: #374151;
+    }
+
+    /* Crops to Avoid */
+    .avoid-wrapper {
+      margin-top: 32px;
+      background: #fff;
+      border-radius: 22px;
+      padding: 22px 26px 24px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+      border: 1px solid #fee2e2;
+    }
+
+    .avoid-header {
+      margin-bottom: 14px;
+    }
+
+    .avoid-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .avoid-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: #fee2e2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b91c1c;
+      font-size: 14px;
+    }
+
+    .avoid-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #991b1b;
+    }
+
+    .avoid-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .avoid-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .avoid-item {
+      background: #fff7f7;
+      border-radius: 16px;
+      padding: 14px 18px;
+      border: 1px solid #ffe4e6;
+    }
+
+    .avoid-item-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .avoid-item-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #fee2e2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b91c1c;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .avoid-crop-name {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .avoid-crop-desc {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    /* AI Analysis panel */
+    .ai-panel {
+      background: #fff7e5;
+      border-radius: 22px;
+      padding: 20px 24px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+      border: 1px solid #fde7b3;
+      margin-top: 32px;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ai-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #fde68a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .ai-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .ai-powered {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .ai-body-intro {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .ai-footer-note {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      font-size: 14px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1100px) {
+      .cards-row { grid-template-columns: 1fr; }
+      .rec-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .image-card { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 700px) {
+      .rec-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-logo">🌱</div>
+      <div class="brand-text">
+        <h1>CropWise AI</h1>
+        <span>Smart Farming Decisions</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Uploaded image summary
+    <section class="image-card">
+      <img src="{{ image_url }}" alt="Uploaded Field Image">
+      <div class="image-card-text">
+        <div class="image-card-title">Field Analysis Snapshot</div>
+        <p>
+          Detected weed: <strong>{{ weed }}</strong> (Confidence: {{ confidence }}%).<br>
+          Soil: <strong>{{ soil.soil }}</strong> | Moisture: <strong>{{ soil.moisture }}</strong>.
+        </p>
+      </div>
+    </section> -->
+
+    <h2 class="page-title">Your Personalized Recommendations</h2>
+    <p class="page-subtitle">
+      Based on weed detection, soil inference, and weather analysis
+    </p>
+
+    <!-- MAIN THREE CARDS -->
+    <div class="cards-row">
+      <!-- Weed Detection Results -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Weed Detection Results</h3>
+          <span class="pill">Current Weed Status</span>
+        </div>
+        <p class="weed-note">Detected primary weed and its estimated impact on your field.</p>
+
+        <div class="weed-item {% if confidence|floatformat:0 < 70 %}warning{% endif %}">
+          <div class="weed-row">
+            <div class="weed-left">
+              {% if confidence|floatformat:0 >= 70 %}
+              <div class="weed-icon-ok">✔</div>
+              {% else %}
+              <div class="weed-icon-warn">!</div>
+              {% endif %}
+              <span class="weed-name">{{ weed }}</span>
+            </div>
+            <span class="weed-impact {% if confidence|floatformat:0 < 70 %}moderate{% endif %}">
+              {{ confidence|floatformat:0 }}% Confidence
+            </span>
+          </div>
+          <div class="weed-bar">
+            <div class="weed-fill {% if confidence|floatformat:0 < 70 %}secondary{% endif %}"
+                 style="width: {{ confidence }}%;"></div>
+            <span class="weed-percent">{{ confidence|floatformat:0 }}%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Soil & Field Conditions -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Inferred Soil & Field Conditions</h3>
+        </div>
+        <p class="soil-subtitle">
+          Conditions inferred from weed, soil and environment data.
+        </p>
+
+        <div class="soil-grid">
+          <div class="soil-card sandal">
+            <div class="soil-label">
+              <span class="soil-label-icon">🪨</span>
+              <span>Soil Type</span>
+            </div>
+            <div class="soil-value-big">{{ soil.soil }}</div>
+          </div>
+
+          <div class="soil-card blue">
+            <div class="soil-label">
+              <span class="soil-label-icon">💧</span>
+              <span>Moisture</span>
+            </div>
+            <div class="soil-value-big">{{ soil.moisture }}</div>
+          </div>
+
+          <div class="soil-card orange">
+            <div class="soil-label">
+              <span class="soil-label-icon">🧪</span>
+              <span>Nutrients</span>
+            </div>
+            <div class="soil-value">
+              {{ soil.nutrients|default:"Moderate" }}
+            </div>
+          </div>
+
+          <div class="soil-card green">
+            <div class="soil-label">
+              <span class="soil-label-icon">⚗️</span>
+              <span>pH Range</span>
+            </div>
+            <div class="soil-value">
+              {{ soil.ph_range|default:"6.0–7.5" }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Current Weather (no 5‑day forecast) -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Current Weather</h3>
+        </div>
+
+        <div class="weather-main">
+          <div class="weather-icon-circle">☁</div>
+          <div class="weather-temp-block">
+            <div class="weather-temp">{{ weather.temperature }}°C</div>
+            <div class="weather-desc">
+              {{ weather.description|default:"Field conditions overview" }}
+            </div>
+          </div>
+        </div>
+
+        <div class="weather-metrics">
+          <div class="metric-card">
+            <div class="metric-label">Humidity</div>
+            <div class="metric-value">{{ weather.humidity }}%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Rainfall</div>
+            <div class="metric-value">{{ weather.rainfall }}mm</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Wind</div>
+            <div class="metric-value">{{ weather.wind }} m/s</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TOP RECOMMENDED CROPS -->
+    <section class="recommended-section">
+      <h2 class="rec-title">Top Recommended Crops</h2>
+
+      <div class="rec-row">
+        {% for c in recommendations %}
+        <article class="rec-card">
+          <div class="rec-left">
+            <div class="rec-icon">🌾</div>
+            <div>
+              <div class="rec-name">{{ c.name|default:c }}</div>
+              <div class="rec-badge">#{{ forloop.counter }} Recommended</div>
+            </div>
+          </div>
+          <div class="rec-right">
+            <div class="rec-score">
+              {{ c.score|default:"–" }}{% if c.score %}%{% endif %}
+            </div>
+            <div class="rec-score-label">Match Score</div>
+          </div>
+        </article>
+        {% empty %}
+        <p>No crop recommendations available.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- CROPS TO AVOID -->
+    <section class="avoid-wrapper">
+      <div class="avoid-header">
+        <div class="avoid-title-row">
+          <span class="avoid-icon">⚠</span>
+          <h3 class="avoid-title">Crops to Avoid</h3>
+        </div>
+        <p class="avoid-subtitle">
+          Based on your field conditions, these crops may face significant challenges:
+        </p>
+      </div>
+
+      <div class="avoid-list">
+        {% for a in avoided %}
+        <article class="avoid-item">
+          <div class="avoid-item-main">
+            <span class="avoid-item-icon">✖</span>
+            <div>
+              <div class="avoid-crop-name">{{ a.crop }}</div>
+              <div class="avoid-crop-desc">
+                {{ a.reason }}
+              </div>
+            </div>
+          </div>
+        </article>
+        {% empty %}
+        <p>No crops explicitly flagged to avoid.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- AI EXPLANATION -->
+    <section class="ai-panel">
+      <div class="ai-header">
+        <div class="ai-badge">⚡</div>
+        <div>
+          <div class="ai-title">AI Analysis</div>
+          <div class="ai-powered">Powered by your crop model</div>
+        </div>
+      </div>
+
+      <p class="ai-body-intro">
+        Explanation of how these recommendations were generated:
+      </p>
+
+      <p>{{ explanation }}</p>
+
+      <p class="ai-footer-note">
+        These recommendations focus on risk reduction and stable yields for your farm.
+      </p>
+    </section>
+
+    <a href="{% url 'crop_recommendation' %}" class="back-link">← Analyze Another Field</a>
+  </main>
+</div>
+</body>
+</html>

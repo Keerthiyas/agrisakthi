@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Recommendation System</title>
+</head>
+<body>
+    <h1>Crop Recommendation System</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" required>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if info %}
+        <h2>Detection Result: {{ info.detection }}</h2>
+        <h3>Soil pH: {{ info.soil_ph }}</h3>
+        <h3>Moisture Level: {{ info.moisture }}</h3>
+        <h3>Recommended Crops: {{ info.recommendation }}</h3>
+        {% if image_url %}
+            <img src="{{ image_url }}" alt="Uploaded Image" width="300">
+        {% endif %}
+    {% endif %}
+</body>
+</html>

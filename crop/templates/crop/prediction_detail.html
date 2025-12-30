@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Details</title>
+</head>
+<body>
+
+<h2>Prediction Details</h2>
+
+{% if record %}
+
+<p><b>Disease:</b> {{ record.predicted_disease }}</p>
+<p><b>Confidence:</b> {{ record.confidence }}</p>
+<p><b>Date:</b> {{ record.created_at }}</p>
+
+<img src="{{ record.image_url }}" width="300">
+
+{% else %}
+<p>No record found.</p>
+{% endif %}
+
+</body>
+</html>

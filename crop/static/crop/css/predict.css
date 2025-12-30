@@ -1,0 +1,191 @@
+.detect-main {
+  background: #f9faf4;
+  padding: 2.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+.detect-container {
+  display: flex;
+  gap: 2.5rem;
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 2px 24px 0 rgba(50,145,64,0.07);
+  padding: 2.5rem 2.2rem;
+  width: 80vw;
+  min-width: 320px;
+  max-width: 1000px;
+  justify-content: center;
+}
+.detect-upload-panel, .detect-result-panel {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detect-upload-panel h2, .detect-result-panel h2 {
+  font-size: 1.42rem;
+  margin-bottom: 1.6rem;
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  color: #207a2d;
+  text-align: left;
+  font-weight: 700;
+  width: 100%;
+}
+.detect-upload-area {
+  background: #f8fdf4;
+  border: 2px dashed #d6ebd5;
+  border-radius: 20px;
+  width: 100%;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 1.3rem;
+  transition: border-color 0.18s;
+}
+.detect-upload-area:hover { border-color: #50b37a; }
+.upload-icon { margin-bottom: 0.65rem; }
+.upload-instructions {
+  color: #194d2e;
+  font-size: 1.08rem;
+  text-align: center;
+}
+.upload-instructions small {
+  color: #699457;
+  font-size: 0.96rem;
+}
+
+.detect-image-preview {
+  background: #f5f8ee;
+  border-radius: 15px;
+  height: 120px;
+  width: 100%;
+  margin-bottom: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #97a687;
+  font-size: 1.07rem;
+  font-weight: 500;
+  overflow: hidden;
+}
+.detect-image-preview img {
+  max-height: 110px;
+  max-width: 95%;
+  border-radius: 12px;
+}
+
+.detect-analyze-btn {
+  margin-top: 0.9rem;
+  padding: 1rem 0;
+  width: 100%;
+  background: #4eca6a;
+  color: #fff;
+  font-size: 1.21rem;
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background 0.16s;
+  box-shadow: 0 3px 14px 0 rgba(140,232,145,0.06);
+}
+.detect-analyze-btn:hover {
+  background: #33a147;
+}
+
+.detect-result-panel { align-items: flex-start; }
+.detect-result-panel h2 { text-align: left; }
+
+.detect-result-box {
+  width: 80%;
+  background: #f8fdf4;
+  border-radius: 18px;
+  padding: 1.1rem 1rem 1.3rem 1rem;
+  min-height: 370px;
+  box-shadow: 0 1px 8px 0 rgba(161,227,162,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.detect-status {
+  margin-bottom: 0.5rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 6px 0 rgba(76,202,87,0.032);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.detect-disease .status-label {
+  font-weight: 600;
+  color: #da3838;
+}
+.status-value.status-danger {
+  color: #da3838;
+  font-weight: 700;
+}
+.detect-confidence .status-label {
+  font-weight: 500;
+  color: #379a50;
+}
+.detect-progress-bar {
+  width: 72%;
+  background: #eafae3;
+  border-radius: 11px;
+  overflow: hidden;
+  margin-left: 1.2rem;
+  height: 17px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.detect-progress {
+  background: linear-gradient(90deg,#54e661 0%, #a5f968 100%);
+  height: 100%;
+  border-radius: 11px;
+}
+.detect-progress-text {
+  margin-left: 0.6rem;
+  color: #187233;
+  font-weight: 700;
+}
+
+.detect-solution {
+  background: #fff;
+  border-radius: 13px;
+  padding: 0.82rem 1.1rem 0.95rem 1.1rem;
+  box-shadow: 0 1px 7px 0 rgba(169,206,145,0.08);
+}
+.solution-title {
+  color: #1a9d54;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+.detect-solution ul {
+  margin: 0 0 0.5rem 0.5rem;
+  padding-left: 1.2rem;
+  font-size: 1rem;
+  color: #415229;
+}
+.detect-solution li {
+  margin-bottom: 0.23rem;
+}
+.empty-state {
+  color: #9ca6a0;
+  font-size: 1.08rem;
+  text-align: center;
+  padding-top: 2rem;
+}
+@media (max-width: 900px) {
+  .detect-container { flex-direction: column; width: 98vw; max-width: 545px;}
+  .detect-upload-panel, .detect-result-panel { width: 100%; min-width: 0;}
+  .detect-upload-panel h2, .detect-result-panel h2 { text-align: center; }
+  .detect-result-panel, .detect-result-box { align-items: center; }
+}

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CropWise AI – Field Intel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-main: #2b7a3f;
+      --green-soft: #6ba576;
+      --bg-main: #f9f6ef;
+      --border-soft: #e2ddcf;
+      --text-main: #1f2933;
+      --text-muted: #6b7280;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 40px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #ffffff;
+    }
+
+    .app-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #14532d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-size: 22px;
+      box-shadow: 0 10px 25px rgba(22, 101, 52, 0.35);
+    }
+
+    .app-title-block h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .app-title-block span {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .page {
+      display: flex;
+      justify-content: center;
+      padding: 30px 24px 40px;
+    }
+
+    .wizard-card {
+      width: 100%;
+      max-width: 1000px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 32px 40px 40px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+
+    .section-index {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 2px solid #d1fae5;
+      background: #ecfdf3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green-main);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .upload-wrapper {
+      border: 2px dashed #e5e7eb;
+      border-radius: var(--radius-lg);
+      padding: 40px 24px 10px;
+      text-align: center;
+      background: #f9fafb;
+      margin-bottom: 28px;
+    }
+
+    .upload-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      margin: 0 auto 16px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green-main);
+      background: #ffffff;
+      font-size: 30px;
+    }
+
+    .upload-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .upload-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .selected-file {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 10px 20px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn.primary {
+      background: #ecfdf3;
+      border-color: #bbf7d0;
+      color: #14532d;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .btn-icon {
+      font-size: 15px;
+    }
+
+    .location-block {
+      border-radius: var(--radius-lg);
+      background: #f9fafb;
+      padding: 18px 18px 16px;
+      margin-bottom: 10px;
+    }
+
+    .location-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .location-detect {
+      flex: 1;
+      background: var(--green-main);
+      color: #f9fafb;
+      border-radius: 999px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 12px 16px;
+      box-shadow: 0 12px 24px rgba(22, 101, 52, 0.35);
+    }
+
+    .location-set {
+      width: 76px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .location-input-wrap {
+      position: relative;
+      margin-top: 8px;
+    }
+
+    .location-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 11px 14px 11px 36px;
+      font-size: 13px;
+    }
+
+    .location-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .location-input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .weather-box {
+      margin: 8px 0 24px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #ecfdf3;
+      color: #14532d;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .optional-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .extra-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .field-label-icon {
+      font-size: 15px;
+      color: var(--green-main);
+    }
+
+    .field-control,
+    .field-select {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid #d1d5db;
+      padding: 10px 12px;
+      font-size: 13px;
+      background: #ffffff;
+    }
+
+    .field-select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+                        linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+      background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .analyze-wrap {
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .analyze-btn {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 999px;
+      padding: 13px 20px;
+      border: none;
+      background: #8bbf93;
+      color: #f9fafb;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 0 auto 8px;
+      display: block;
+      transition: background 0.2s ease, transform 0.2s ease,
+                  box-shadow 0.2s ease;
+
+    }
+
+    .analyze-btn:hover {
+      background: #203f26;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+    }
+
+    .analyze-helper {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .app-footer {
+      padding: 10px 40px 18px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .footer-logo {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #14532d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f9fafb;
+      font-size: 11px;
+    }
+
+    .footer-right {
+      font-style: italic;
+    }
+
+    @media (max-width: 900px) {
+      .wizard-card { padding: 24px 18px 26px; }
+      .extra-row { grid-template-columns: 1fr; }
+      .location-row { flex-direction: column; }
+      .location-set { width: 100%; }
+      .app-header { padding-inline: 18px; }
+      .app-footer {
+        padding-inline: 18px;
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="app-logo">🌱</div>
+    <div class="app-title-block">
+      <h1>CropWise AI</h1>
+      <span>Smart Farming Decisions</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wizard-card">
+
+      <!-- Django form that goes to crop recommendation analyze page -->
+      <form method="POST"
+            enctype="multipart/form-data"
+            action="{% url 'analyze_crop' %}">
+        {% csrf_token %}
+
+        <!-- 1. Field Image -->
+        <div class="section">
+          <div class="section-title">
+            <span class="section-index">1</span>
+            <span>Field Image</span>
+          </div>
+
+          <div class="upload-wrapper">
+            <div class="upload-icon">⤴</div>
+            <div class="upload-title">Upload Field Image</div>
+            <p class="upload-subtitle">
+              Drag and drop an image of your field, or click to browse
+            </p>
+
+            <!-- hidden input with name=image -->
+            <input
+              type="file"
+              id="fieldImageInput"
+              name="image"
+              accept="image/*"
+              style="display:none"
+              required
+            />
+
+            <div class="upload-actions">
+              <button class="btn primary" type="button" onclick="openFieldImagePicker()">
+                <span class="btn-icon">🖼</span>
+                <span>Browse Gallery</span>
+              </button>
+              <button class="btn" type="button">
+                <span class="btn-icon">📷</span>
+                <span>Take Photo</span>
+              </button>
+            </div>
+
+            <div id="selectedFileName" class="selected-file"></div>
+          </div>
+        </div>
+
+        <!-- 2. Location -->
+        <div class="section">
+          <div class="section-title">
+            <span class="section-index">2</span>
+            <span>Your Location</span>
+          </div>
+
+          <div class="location-block">
+            <div class="location-row">
+              <button class="location-detect" type="button">
+                <span class="location-detect-icon">📍</span>
+                <span>Detect My Location</span>
+              </button>
+              <button class="location-set" type="button">Set</button>
+            </div>
+
+            <!-- Manual or auto latitude -->
+            <div class="location-input-wrap">
+              <span class="location-input-icon">φ</span>
+              <input
+                type="text"
+                id="latInput"
+                name="lat"
+                class="location-input"
+                placeholder="Latitude (auto or manual)"
+                required
+              />
+            </div>
+
+            <!-- Manual or auto longitude -->
+            <div class="location-input-wrap" style="margin-top:10px;">
+              <span class="location-input-icon">λ</span>
+              <input
+                type="text"
+                id="lonInput"
+                name="lon"
+                class="location-input"
+                placeholder="Longitude (auto or manual)"
+                required
+              />
+            </div>
+
+            <!-- Optional search text (not required by backend) -->
+            <div class="location-input-wrap" style="margin-top:10px;">
+              <span class="location-input-icon">🔍</span>
+              <input
+                type="text"
+                id="manualLocationInput"
+                class="location-input"
+                placeholder="Or enter location name (optional)..."
+              />
+            </div>
+          </div>
+
+          <div id="weatherBox" class="weather-box">
+            Weather will appear here after detecting location.
+          </div>
+        </div>
+
+        <!-- 3. Additional Details (optional) -->
+        <div class="section">
+          <div class="section-title">
+            <span class="section-index">3</span>
+            <span>Additional Details</span>
+            <span style="font-size:12px;color:#9ca3af;margin-left:4px;">
+              (Optional)
+            </span>
+          </div>
+
+          <p class="optional-label">
+            Optional: Help us give better recommendations
+          </p>
+
+          <div class="extra-row">
+            <div class="field-group">
+              <label class="field-label">
+                <span class="field-label-icon">🌾</span>
+                <span>Preferred Crop</span>
+              </label>
+              <select class="field-select" name="preferred_crop">
+                <option value="">Select crop...</option>
+                <option value="wheat">Wheat</option>
+                <option value="rice">Rice</option>
+                <option value="cotton">Cotton</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <span class="field-label-icon">📏</span>
+                <span>Land Size</span>
+              </label>
+              <input
+                type="text"
+                class="field-control"
+                name="land_size"
+                placeholder="e.g., 5 acres"
+              />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <span class="field-label-icon">📦</span>
+                <span>Expected Quantity</span>
+              </label>
+              <input
+                type="text"
+                class="field-control"
+                name="expected_qty"
+                placeholder="e.g., 10 tons"
+              />
+            </div>
+          </div>
+
+          <div class="analyze-wrap">
+            <button class="analyze-btn" type="submit">
+              Analyze My Field →
+            </button>
+            <div class="analyze-helper">
+              Please upload a field image and provide your coordinates to continue
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-left">
+      <div class="footer-logo">🌱</div>
+      <span>CropWise AI © 2025 – Smart Farming Decisions</span>
+    </div>
+    <div class="footer-right">
+      Recommendations based on AI analysis. Always consult local experts.
+    </div>
+  </footer>
+</div>
+
+<script>
+  /* File picker */
+  function openFieldImagePicker() {
+    const input = document.getElementById('fieldImageInput');
+    if (input) input.click();
+  }
+
+  const fieldInput = document.getElementById('fieldImageInput');
+  const fileNameLabel = document.getElementById('selectedFileName');
+
+  if (fieldInput) {
+    fieldInput.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        fileNameLabel.textContent = 'Selected: ' + this.files[0].name;
+      } else {
+        fileNameLabel.textContent = '';
+      }
+    });
+  }
+
+  /* OpenWeather + geolocation */
+  const OPENWEATHER_API_KEY = '0747da042e4d3b43e650286a06b23128';  // put your key here[web:43]
+  const UNITS = 'metric';
+  const weatherBox = document.getElementById('weatherBox');
+  const latInput = document.getElementById('latInput');
+  const lonInput = document.getElementById('lonInput');
+
+  function setWeatherMessage(msg) {
+    if (weatherBox) weatherBox.textContent = msg;
+  }
+
+  function fetchWeatherByCoords(lat, lon) {
+    const url =
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}` +
+      `&appid=${OPENWEATHER_API_KEY}&units=${UNITS}`;  /* current weather endpoint[web:36] */
+
+    fetch(url)
+      .then(resp => {
+        if (!resp.ok) throw new Error('Weather request failed: ' + resp.status);
+        return resp.json();
+      })
+      .then(data => {
+        const temp = data.main && data.main.temp;
+        const description = data.weather && data.weather[0] && data.weather[0].description;
+        const place = data.name || 'your area';
+        if (typeof temp === 'number' && description) {
+          setWeatherMessage(`Weather in ${place}: ${Math.round(temp)}°C, ${description}`);
+        } else {
+          setWeatherMessage('Weather data unavailable for this location.');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setWeatherMessage('Unable to load weather right now. You can still enter coordinates manually.');
+      });
+  }
+
+  function detectLocationAndWeather() {
+    if (!navigator.geolocation) {
+      setWeatherMessage('Geolocation is not supported. Enter coordinates manually.');
+      return;
+    }
+    setWeatherMessage('Detecting location...');
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const lat = position.coords.latitude.toFixed(5);
+        const lon = position.coords.longitude.toFixed(5);
+        if (latInput && lonInput) {
+          latInput.value = lat;
+          lonInput.value = lon;
+        }
+        fetchWeatherByCoords(lat, lon);
+      },
+      error => {
+        console.error(error);
+        setWeatherMessage('Location permission denied. Enter coordinates manually.');
+      }
+    );
+  }
+
+  const detectBtn = document.querySelector('.location-detect');
+  if (detectBtn) {
+    detectBtn.addEventListener('click', detectLocationAndWeather);
+  }
+</script>
+</body>
+</html>
