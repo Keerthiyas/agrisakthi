@@ -7,4 +7,5 @@ Recommended crops are chosen because they tolerate weed competition and match so
 Crops listed under avoid have higher risk due to water stress or weed pressure.
 
 This recommendation focuses on reducing cultivation risk rather than only maximizing yield.
+
 """

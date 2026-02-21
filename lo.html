@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agrisakthi – Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Background animation */
+    .sky {
+      background: linear-gradient(to top, #a0e9ff, #ffffff);
+      animation: skyMove 20s linear infinite;
+    }
+    @keyframes skyMove {
+      0% {background-position: 0 0;}
+      100% {background-position: 0 -1000px;}
+    }
+    /* Plant growth animation */
+    .plant {
+      height: 0;
+      width: 10px;
+      background: #3CAF5A;
+      margin: 0 auto;
+      border-radius: 5px;
+      animation: growPlant 2s forwards;
+    }
+    @keyframes growPlant {
+      to {height: 80px;}
+    }
+  </style>
+</head>
+<body class="sky flex items-center justify-center min-h-screen">
+
+  <!-- Login Card (looks like a pot) -->
+  <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-10 w-96 relative">
+    <!-- Tiny plant animation on top -->
+    <div class="mb-6">
+      <div class="plant"></div>
+      <div class="w-20 h-5 bg-brown-600 rounded-b-full mx-auto mt-2"></div>
+    </div>
+
+    <h1 class="text-2xl font-bold text-green-700 text-center mb-6">Login to AgriSakthi</h1>
+
+    <form method="POST" class="space-y-4">
+      <!-- Username -->
+      <div class="relative">
+        <input type="text" placeholder="Username" class="w-full border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
+        <span class="absolute right-3 top-2 text-green-500">🌱</span>
+      </div>
+
+      <!-- Password -->
+      <div class="relative">
+        <input type="password" placeholder="Password" class="w-full border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
+        <span class="absolute right-3 top-2 text-green-500">🔒</span>
+      </div>
+
+      <!-- Login Button -->
+      <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-full transition-all duration-300">
+        Login
+      </button>
+    </form>
+
+    <!-- Extra links -->
+    <p class="text-center text-sm text-gray-600 mt-4">
+      <a href="#" class="text-green-600 hover:underline">Forgot Password?</a>
+    </p>
+  </div>
+
+</body>
+</html>

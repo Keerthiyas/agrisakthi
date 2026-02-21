@@ -1,3 +1,4 @@
+{%load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -675,5 +676,94 @@
     detectBtn.addEventListener('click', detectLocationAndWeather);
   }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+<script>
+let model;
+const classNames = [
+  "Parthenium",
+  "Cyperus",
+  "Amaranthus",
+  "Echinochloa",
+  "Chenopodium"
+]; 
+
+// Load the model
+async function loadModel() {
+  model = await tf.loadLayersModel("{% static 'model/weed/model.json' %}");
+  console.log("Weed model loaded");
+}
+loadModel();
+
+let predictedWeed = "";
+let predictedConfidence = 0;
+
+// Hook into image upload
+document.getElementById("fieldImageInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Preview image element
+  let img = document.createElement("img");
+  img.src = URL.createObjectURL(file);
+  img.style.display = "none"; // hide temp img
+  document.body.appendChild(img);
+
+  img.onload = async () => {
+    // Preprocess image
+    let tensor = tf.browser.fromPixels(img)
+      .resizeNearestNeighbor([224, 224])
+      .toFloat()
+      .div(tf.scalar(255))
+      .expandDims();
+
+    // Predict
+    let predictions = await model.predict(tensor).data();
+    let maxIndex = predictions.indexOf(Math.max(...predictions));
+
+    // Save prediction in variables, do NOT submit yet
+    predictedWeed = classNames[maxIndex];
+    predictedConfidence = (predictions[maxIndex]*100).toFixed(2);
+
+    console.log("Predicted Weed:", predictedWeed, "Confidence:", predictedConfidence);
+
+    document.body.removeChild(img); // clean up
+  };
+});
+
+// Hook into form submission
+const form = document.querySelector('form');
+form.addEventListener('submit', function(e) {
+    const lat = document.getElementById('latInput').value.trim();
+    const lon = document.getElementById('lonInput').value.trim();
+
+    if (!lat || !lon) {
+        e.preventDefault();  
+        alert("Please provide your field coordinates before submitting!");
+        return false;
+    }
+
+    // Append hidden inputs for weed prediction before submission
+    if (predictedWeed) {
+        let weedInput = document.createElement("input");
+        weedInput.type = "hidden";
+        weedInput.name = "weed_name";
+        weedInput.value = predictedWeed;
+        form.appendChild(weedInput);
+
+        let confInput = document.createElement("input");
+        confInput.type = "hidden";
+        confInput.name = "confidence";
+        confInput.value = predictedConfidence;
+        form.appendChild(confInput);
+    } else {
+        e.preventDefault();
+        alert("Please upload a field image first for weed detection!");
+        return false;
+    }
+});
+</script>
+
+
+
 </body>
 </html>

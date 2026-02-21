@@ -9,15 +9,21 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import openai
+import openai
 import tensorflow as tf
 from crop.services.weather_api import get_weather
 import google.generativeai as genai
 from .gemini_ai import ask_gemini
+from django.shortcuts import  redirect
+from django.contrib import messages
+from supabase import create_client
 
 
+SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co"
+SUPABASE_KEY = "YOUR_ANON_PUBLIC_KEY"
 
-
-
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # Supabase client is provided by `crop/utils/supabase_client.py` and imported below
@@ -40,16 +46,72 @@ model = tf.keras.models.load_model(MODEL_PATH)
 # -------------------- LOAD CLASS NAMES --------------------
 with open(CLASS_NAMES_PATH) as f:
     class_names = json.load(f)
-
+ 
 IMG_SIZE = 224
 
+
 # -------------------- VIEWS --------------------
-def home(request):
-    return render(request, 'crop/home.html')
 # def home(request):
-#     return render(request, 'crop/predict.html')
+#     return render(request, 'crop/home.html')
+
+def home(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('auth')  # Redirect to the new single-page auth
+
+    return render(request, 'crop/home.html')
 
 
+    return render(request, 'crop/home.html')
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from supabase import create_client, Client
+
+
+def auth_view(request):
+    if request.method == "POST":
+        # Check if user clicked "signup" or "login"
+        action = request.POST.get('action')  # "login" or "signup"
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        name = request.POST.get('name', '')  # Optional, only for signup
+
+        if action == "signup":
+            try:
+                # Create user in Supabase
+                supabase.auth.sign_up({
+                    "email": email,
+                    "password": password
+                })
+                messages.success(request, "Signup successful! Check your email to confirm.")
+                return redirect('auth')
+            except Exception as e:
+                messages.error(request, "Signup failed: " + str(e))
+                return redirect('auth')
+
+        elif action == "login":
+            try:
+                # Sign in user
+                response = supabase.auth.sign_in_with_password({
+                    "email": email,
+                    "password": password
+                })
+
+                # Save session
+                request.session['user_id'] = response.user.id
+                request.session['email'] = response.user.email
+                return redirect('home')
+            except Exception as e:
+                messages.error(request, "Invalid email or password")
+                return redirect('auth')
+
+    # GET request → just render the page
+    return render(request, 'auth/auth.html')
+
+# -------------------- LOGOUT --------------------
+def logout_view(request):
+    request.session.flush()
+    return redirect('auth')
 def predict_image(request):
     context = {}
 
@@ -569,10 +631,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .services.weather_api import get_weather
-# from .services.disease_risk import check_disease_risk
 from .utils.weather import fetch_weather
 
-# Distance helper
 def distance(lat1, lon1, lat2, lon2):
     R = 6371
     dlat = math.radians(lat2 - lat1)
@@ -583,22 +643,23 @@ def distance(lat1, lon1, lat2, lon2):
     c = 2 * math.asin(math.sqrt(a))
     return R * c
 
-# Initial page render
 def weather_mandi_view(request):
     lat, lon = 11.0174, 76.9553  # default coordinates
-    weather = fetch_weather(lat, lon)
-    # risks = check_disease_risk(weather)
+    weather_data = fetch_weather(lat, lon)
     return render(request, "crop/mandi_form.html", {
-        "weather": weather,
+        "temp": weather_data.get("temperature"),
+        "humidity": weather_data.get("humidity"),
+        "rain": weather_data.get("rainfall"),
+        "wind": weather_data.get("wind"),
         "risks": []
     })
 
-# # AJAX: fetch weather and disease dynamically
+
 def get_weather_api(request):
     lat = float(request.GET.get('lat', 11.0174))
     lon = float(request.GET.get('lon', 76.9553))
     weather = fetch_weather(lat, lon)
-    # risks = check_disease_risk(weather)
+    print("SENDING TO FRONTEND:", weather)
     dummy_risks = [{
         "crop": "N/A",
         "disease": "Feature disabled",
@@ -660,51 +721,113 @@ from .services.weather_api import fetch_weather
 from .utils.mandi_utils import infer_soil_from_weed, recommend_crops
 from .utils.gemini_ai import generate_explanation
 from django.core.files.storage import FileSystemStorage
+from django.utils import timezone
 
 def crop_recommendation_view(request):
     return render(request, "crop/weed_upload.html")
+def safe_float(value, default=0.0):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+def clean_crop_name(name):
+    name = name.lower()
+
+    if "(" in name:
+        name = name.split("(")[0]
+
+    name = name.strip()
+    return name
+
 
 def analyze_crop_view(request):
+    """
+    Receives POST data from frontend:
+      - weed_name: detected by TF.js
+      - confidence: from TF.js
+      - lat, lon: field location
+    Then performs soil inference, weather fetch, crop recommendation, and explanation.
+    """
     if request.method == "POST":
-        image = request.FILES.get("image")
-        lat = float(request.POST.get("lat"))
-        lon = float(request.POST.get("lon"))
-        fs = FileSystemStorage()
-        filename = fs.save(image.name, image)
-        image_url = fs.url(filename)
+        # Get data from POST (sent via JS)
+        weed_name = request.POST.get("weed_name")
+        confidence = float(request.POST.get("confidence", 0))
+        lat = safe_float(request.POST.get("lat", 0))
+        lon = safe_float(request.POST.get("lon", 0))
 
-        # 1. Weed detection
-        weed_name, confidence = detect_weed(image)
-
-        # 2. Infer soil & field condition
+        # 1. Infer soil & field condition from weed
         soil_info = infer_soil_from_weed(weed_name)
 
-        # 3. Fetch weather
+        #insert into supabase weed_analysis table
+
+        supabase.table("weed_analysis").insert({
+        "farmer_id": request.session.get("user_id"),  
+        "image_url": None, 
+        "predicted_weed_type": weed_name,
+        "weed_density": int(confidence),
+        "weed_effect": soil_info.get("condition", "Unknown"),
+        "created_at": timezone.now().isoformat()
+    }).execute()
+
+        # 2. Fetch weather
         weather = fetch_weather(lat, lon)
 
-        # 4. Crop recommendation
-        recommendations, avoided = recommend_crops(soil_info, weather)
+        # 3. Crop recommendation based on soil & weather
+        recommendations, avoided = recommend_crops(soil_info, weather)\
+        
+        print("Recommendations:", recommendations) 
 
-        # 5. Gemini explanation
+        processed_recommendations = []
+
+        for item in recommendations:
+            original_name = item["name"]
+
+            # remove bracket content
+            clean_name = original_name.split("(")[0].strip()
+
+            processed_recommendations.append({
+                "name": original_name,     # for display
+                "clean_name": clean_name,  # for image slugify
+                "score": item.get("score")
+            })
+
+
+        # 4. Generate explanation (optional for user)
         explanation = generate_explanation(
-            weed_name, soil_info, weather, recommendations, avoided
+            weed_name, soil_info, weather, processed_recommendations, avoided
         )
+
+       
+
+                # ✅ INSERT CROP RECOMMENDATION INTO SUPABASE
+        supabase.table("crop_recommendations").insert({
+            "farmer_id": request.session.get("user_id"),
+            "recommended_crop": ", ".join([c["clean_name"] for c in processed_recommendations]),
+            "reason": explanation,
+            "factors_used": {
+                "weed": weed_name,
+                "soil": soil_info,
+                "weather": weather
+            },
+            "created_at": timezone.now().isoformat()
+        }).execute()
+
 
         return render(request, "crop/predict.html", {
             "weed": weed_name,
             "confidence": confidence,
             "soil": soil_info,
             "weather": weather,
-            "recommendations": recommendations,
+            "recommendations": processed_recommendations,
             "avoided": avoided,
             "explanation": explanation
         })
-
 import json
 from django.http import JsonResponse
 from .gemini_ai import ask_gemini
 @csrf_exempt
-def chatbot(request):
+def schemes_chatbot(request):
     data = json.loads(request.body)
 
     prompt = f"""
@@ -758,3 +881,53 @@ Language: same as user.
 
     reply = ask_gemini(prompt)
     return JsonResponse({"reply": reply})
+
+def dashboard(request):
+    return render(request, "crop/dashboard.html")
+@csrf_exempt
+def main_chatbot_api(request):
+
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required"})
+
+    data = json.loads(request.body)
+
+    prompt = f"""
+You are AgriSakthi AI, an expert agriculture assistant for Indian farmers.
+
+Rules:
+- Reply in the user's language (Tamil or English).
+- Use simple words.
+- Do NOT add greetings.
+- Do NOT add introduction sentences.
+- Use very simple words.
+- Maximun 6 bullet points.
+- Each bullet must be 1 short sentence.
+- No long paragraphs.
+- No extra explanation.
+- Give only practical farming advice.
+- Add suitable emojis for clarity.
+- Start with a short title line.
+- Leave one empty line after title.
+- Use bullet points with spacing.
+- Do not write raw symbols like pH alone.
+- Write properly like "மண்ணின் pH அளவு".
+Format answer using HTML:
+- Use <strong> for title
+- Use <ul> and <li> for points
+
+
+User question:
+"{data.get('message')}"
+
+Give helpful and clear farming guidance.
+"""
+
+    reply = ask_gemini(prompt)
+
+    return JsonResponse({"reply": reply})
+
+from django.shortcuts import render
+def main_chatbot_page(request):
+    return render(request, "crop/bot.html")
+

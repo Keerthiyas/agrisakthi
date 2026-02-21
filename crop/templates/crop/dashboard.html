@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrisakthi - Smart Agriculture Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #faf7f1; font-family: 'Inter', sans-serif; }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); }
+        .custom-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#faf7f1] border-b border-gray-200">
+    <div class="flex justify-between items-center px-8 py-4">
+        <div class="flex items-center gap-3">
+            <div class="bg-emerald-700 p-2 rounded-lg">
+                <i class="fas fa-leaf text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 leading-tight">Agrisakthi</h1>
+                <p class="text-gray-500 text-sm">Smart Agriculture Support</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="relative">
+                <i class="far fa-bell text-gray-500 text-xl"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">3</span>
+            </div>
+            <div class="flex items-center gap-3 bg-white p-1 pr-4 rounded-full border border-gray-200">
+                <div class="bg-emerald-100 h-8 w-8 rounded-full flex items-center justify-center text-emerald-700">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">Ramesh Kumar</span>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- ================= END HEADER ================= -->
+
+    <section class="mb-10 mt-20">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">Dashboard Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-2xl card-shadow flex justify-between items-start border border-gray-50">
+                <div>
+                    <p class="text-gray-500 text-sm mb-1">Total Lands</p>
+                    <h3 class="text-3xl font-bold text-gray-800" id="total-lands-count">3</h3>
+                    <p class="text-gray-400 text-xs mt-1">Active farmlands</p>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
+                    <i class="fas fa-map-marker-alt text-xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl card-shadow flex justify-between items-start border border-gray-50">
+                <div>
+                    <p class="text-gray-500 text-sm mb-1">Total Area</p>
+                    <h3 class="text-3xl font-bold text-gray-800">10.5 Acres</h3>
+                    <p class="text-gray-400 text-xs mt-1">Under cultivation</p>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
+                    <i class="fas fa-ruler-combined text-xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl card-shadow flex justify-between items-start border border-gray-50">
+                <div>
+                    <p class="text-gray-500 text-sm mb-1">Today's Weather</p>
+                    <h3 class="text-3xl font-bold text-gray-800">28°C</h3>
+                    <p class="text-gray-400 text-xs mt-1">Partly cloudy, 65% humidity</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-xl text-gray-400">
+                    <i class="fas fa-cloud-sun text-xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl card-shadow flex justify-between items-start border border-gray-50">
+                <div>
+                    <p class="text-gray-500 text-sm mb-1">Active Alerts</p>
+                    <h3 class="text-3xl font-bold text-gray-800">3</h3>
+                    <p class="text-red-500 text-xs mt-1"><i class="fas fa-arrow-down text-[8px]"></i> 2% from last week</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded-xl text-orange-400">
+                    <i class="fas fa-exclamation-triangle text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+     <section>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Land Management</h2>
+            <button onclick="toggleModal(true)" class="bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all font-bold shadow-md">
+                <i class="fas fa-plus"></i> Add Land
+            </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="land-container">
+            </div>
+    </section>
+
+    <div id="landModal" class="fixed inset-0 modal-overlay flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-[2rem] w-full max-w-md p-8 relative shadow-2xl">
+            <button onclick="toggleModal(false)" class="absolute top-6 right-8 text-gray-400 hover:text-gray-600 text-2xl">×</button>
+            
+            <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Land</h2>
+            
+            <form id="addLandForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Land Name</label>
+                    <input type="text" id="landName" placeholder="e.g., Land 1 - Main Farm" required
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-emerald-800/60 bg-white focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                    <input type="text" id="location" placeholder="e.g., Coimbatore, Tamil Nadu" required
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:outline-none text-gray-600">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Size</label>
+                        <input type="text" id="size" placeholder="e.g., 5 Acres" required
+                            class="w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:outline-none text-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Soil Type</label>
+                        <select id="soilType" required class="custom-select w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:outline-none text-gray-500">
+                            <option value="" disabled selected>Select soil type</option>
+                            <option>Red Loamy</option>
+                            <option>Black Cotton</option>
+                            <option>Mountain Soil</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Current Crop</label>
+                    <input type="text" id="crop" placeholder="e.g., Paddy (IR-64)" required
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:outline-none text-gray-600">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Land Health</label>
+                    <select id="health" class="custom-select w-full px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50/50 focus:outline-none text-gray-700">
+                        <option>Excellent</option>
+                        <option selected>Good</option>
+                        <option>Moderate</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="toggleModal(false)" class="px-8 py-3 rounded-xl border border-gray-100 text-gray-600 font-bold hover:bg-gray-50 transition-all">Cancel</button>
+                    <button type="submit" class="px-8 py-3 bg-emerald-800 text-white rounded-xl font-bold hover:bg-emerald-900 transition-all">Add Land</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <section class="mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">Module Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 card-shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-emerald-50 p-2 rounded-lg text-emerald-600"><i class="fas fa-leaf"></i></div>
+                        <span class="font-bold text-gray-800">Crop Recommendation</span>
+                    </div>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Selected Land</p>
+                            <p class="text-sm font-bold text-gray-800">Land 1 - Main Farm</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Recommended Crop</p>
+                            <p class="text-sm font-bold text-gray-800">Rice (Basmati)</p>
+                        </div>
+                        <span class="inline-block bg-emerald-50 text-emerald-600 text-[10px] px-3 py-1 rounded-full border border-emerald-100 font-medium">High Yield Expected</span>
+                    </div>
+                </div>
+                <button class="w-full flex justify-between items-center pt-4 border-t border-gray-50 text-emerald-700 text-sm font-semibold hover:opacity-70">
+                    View Details <i class="fas fa-chevron-right text-gray-300"></i>
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 card-shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-emerald-50 p-2 rounded-lg text-emerald-600"><i class="fas fa-bug"></i></div>
+                        <span class="font-bold text-gray-800">Pest & Disease</span>
+                    </div>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Last Detection</p>
+                            <p class="text-sm font-bold text-gray-800">Leaf Blight</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Risk Level</p>
+                            <p class="text-sm font-bold text-gray-800">Moderate</p>
+                        </div>
+                        <span class="inline-block bg-orange-50 text-orange-600 text-[10px] px-3 py-1 rounded-full border border-orange-100 font-medium">Treatment Available</span>
+                    </div>
+                </div>
+                <button class="w-full flex justify-between items-center pt-4 border-t border-gray-50 text-emerald-700 text-sm font-semibold hover:opacity-70">
+                    View Details <i class="fas fa-chevron-right text-gray-300"></i>
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 card-shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-emerald-50 p-2 rounded-lg text-emerald-600"><i class="fas fa-cloud"></i></div>
+                        <span class="font-bold text-gray-800">Weather Updates</span>
+                    </div>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Temperature</p>
+                            <p class="text-sm font-bold text-gray-800">28°C - 32°C</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Rainfall Forecast</p>
+                            <p class="text-sm font-bold text-gray-800">50mm expected</p>
+                        </div>
+                        <span class="inline-block bg-blue-50 text-blue-600 text-[10px] px-3 py-1 rounded-full border border-blue-100 font-medium">Rain Alert</span>
+                    </div>
+                </div>
+                <button class="w-full flex justify-between items-center pt-4 border-t border-gray-50 text-emerald-700 text-sm font-semibold hover:opacity-70">
+                    View Details <i class="fas fa-chevron-right text-gray-300"></i>
+                </button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-100 card-shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-emerald-50 p-2 rounded-lg text-emerald-600"><i class="fas fa-chart-line"></i></div>
+                        <span class="font-bold text-gray-800">Market Updates</span>
+                    </div>
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Top Crop Price</p>
+                            <p class="text-sm font-bold text-gray-800">Tomato - ₹45/kg</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Price Trend</p>
+                            <p class="text-sm font-bold text-gray-800">+15% this week</p>
+                        </div>
+                        <span class="inline-block bg-emerald-50 text-emerald-600 text-[10px] px-3 py-1 rounded-full border border-emerald-100 font-medium">Trending Up</span>
+                    </div>
+                </div>
+                <button class="w-full flex justify-between items-center pt-4 border-t border-gray-50 text-emerald-700 text-sm font-semibold hover:opacity-70">
+                    View Details <i class="fas fa-chevron-right text-gray-300"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 card-shadow flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-50 p-3 rounded-xl text-blue-500"><i class="fas fa-file-invoice text-xl"></i></div>
+                <div>
+                    <h3 class="font-bold text-gray-800">Government Schemes</h3>
+                    <p class="text-xs text-gray-400">You are eligible for 5 government schemes</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="hidden md:flex gap-2">
+                    <span class="bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600">PM-KISAN</span>
+                    <span class="bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600">Crop Insurance</span>
+                    <span class="bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600">Soil Health Card</span>
+                </div>
+                <span class="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold">+2 More</span>
+                <a href="#" class="ml-4 text-emerald-700 text-sm font-bold hover:underline">View All Eligible Schemes →</a>
+            </div>
+        </div>
+    </section>
+
+   
+    
+
+    <script>
+        let lands = [
+            { id: 1, name: "Land 1 - Main Farm", location: "Coimbatore, Tamil Nadu", size: "5 Acres", soil: "Red Loamy", crop: "Paddy (IR-64)", health: "Excellent" },
+            { id: 2, name: "Land 2 - East Plot", location: "Erode, Tamil Nadu", size: "3.5 Acres", soil: "Black Cotton", crop: "Sugarcane", health: "Good" },
+            { id: 3, name: "Land 3 - Hill Side", location: "Nilgiris, Tamil Nadu", size: "2 Acres", soil: "Mountain Soil", crop: "Vegetables", health: "Moderate" }
+        ];
+
+        function toggleModal(show) {
+            const modal = document.getElementById('landModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+                document.getElementById('addLandForm').reset();
+            }
+        }
+
+        function getHealthBadge(health) {
+            switch(health) {
+                case 'Excellent': return 'bg-emerald-500';
+                case 'Good': return 'bg-emerald-600';
+                case 'Moderate': return 'bg-orange-500';
+                default: return 'bg-red-500';
+            }
+        }
+
+        function renderLands() {
+            const container = document.getElementById('land-container');
+            container.innerHTML = '';
+            lands.forEach(land => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl overflow-hidden card-shadow border border-emerald-100 flex flex-col">
+                        <div class="h-1.5 bg-emerald-800"></div>
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">${land.name}</h3>
+                                    <p class="text-gray-400 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> ${land.location}</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                            <div class="space-y-4 mb-8 flex-grow">
+                                <div class="flex justify-between text-sm"><span class="text-gray-400 font-medium"><i class="fas fa-expand-arrows-alt w-5 text-emerald-800/30"></i> Size</span><span class="text-gray-800 font-bold">${land.size}</span></div>
+                                <div class="flex justify-between text-sm"><span class="text-gray-400 font-medium"><i class="fas fa-layer-group w-5 text-emerald-800/30"></i> Soil Type</span><span class="text-gray-800 font-bold">${land.soil}</span></div>
+                                <div class="flex justify-between text-sm"><span class="text-gray-400 font-medium"><i class="fas fa-seedling w-5 text-emerald-800/30"></i> Current Crop</span><span class="text-gray-800 font-bold">${land.crop}</span></div>
+                                <div class="flex justify-between items-center text-sm pt-2"><span class="text-gray-400 font-medium">Land Health</span><span class="${getHealthBadge(land.health)} text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">${land.health}</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="py-2.5 text-gray-700 font-bold border border-gray-100 rounded-xl hover:bg-yellow-100 transition-all text-sm">View Details</button>
+                                <button class="py-2.5 bg-emerald-800 text-white font-bold rounded-xl hover:bg-emerald-900 transition-all text-sm">Edit Land</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('total-lands-count').innerText = lands.length;
+        }
+
+        document.getElementById('addLandForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newLand = {
+                id: lands.length + 1,
+                name: document.getElementById('landName').value,
+                location: document.getElementById('location').value,
+                size: document.getElementById('size').value,
+                soil: document.getElementById('soilType').value,
+                crop: document.getElementById('crop').value,
+                health: document.getElementById('health').value
+            };
+            lands.push(newLand);
+            renderLands();
+            toggleModal(false);
+        });
+
+        // Initial render
+        renderLands();
+    </script>
+</body>
+</html>

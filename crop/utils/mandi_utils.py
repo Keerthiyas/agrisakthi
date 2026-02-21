@@ -42,39 +42,142 @@ def get_nearby_mandi(crop_name, lat, lon, transport="road", quantity_kg=100, cha
     mandis = sorted(mandis, key=lambda x: x["profit_per_kg"], reverse=True)
     return mandis[:top_n]
 # crop/utils/mandi_utils.py
-
-def infer_soil_from_weed(weed):
-    weed_map = {
-        "Crabgrass": {"soil": "Sandy", "moisture": "Low", "nutrients": "Low", "weed_pressure": "High"},
-        "Nutgrass": {"soil": "Clay", "moisture": "High", "nutrients": "Medium", "weed_pressure": "Medium"}
-    }
-    return weed_map.get(weed, {"soil": "Unknown", "moisture": "Medium", "nutrients": "Medium", "weed_pressure": "Low"})
-
-CROPS = [
-    {"name": "Pearl Millet", "soil": ["Sandy"], "water": "Low", "weed_tolerance": "High"},
-    {"name": "Groundnut", "soil": ["Sandy", "Loamy"], "water": "Medium", "weed_tolerance": "Medium"},
-    {"name": "Paddy", "soil": ["Clay"], "water": "High", "weed_tolerance": "Low"},
-    {"name": "Sorghum", "soil": ["Clay", "Loamy"], "water": "Medium", "weed_tolerance": "High"},
-    {"name": "Millet", "soil": ["Clay", "Sandy"], "water": "Low", "weed_tolerance": "Medium"},
-    {"name": "Wheat", "soil": ["Clay", "Loamy"], "water": "Medium", "weed_tolerance": "Medium"},
-    {"name": "Rice", "soil": ["Clay"], "water": "High", "weed_tolerance": "Low"},
-    {"name": "Tomato", "soil": ["Sandy", "Loamy"], "water": "Medium", "weed_tolerance": "Medium"},
-    {"name": "Groundnut", "soil": ["Sandy", "Loamy"], "water": "Medium", "weed_tolerance": "Medium"},
-]
+import json
+import re
+import google.generativeai as genai
 
 def recommend_crops(soil_info, weather):
-    recommended = []
-    avoided = []
-    for crop in CROPS:
-        risk = []
-        if soil_info["soil"] not in crop["soil"]:
-            risk.append("Unsuitable soil")
-        if soil_info["weed_pressure"] == "High" and crop["weed_tolerance"] == "Low":
-            risk.append("High weed competition")
-        if soil_info["moisture"] == "Low" and crop["water"] == "High":
-            risk.append("Water stress risk")
-        if risk:
-            avoided.append({"crop": crop["name"], "reason": ", ".join(risk)})
-        else:
-            recommended.append(crop["name"])
-    return recommended[:5], avoided
+
+    prompt = f"""
+You are an expert agronomist AI for Indian agriculture.
+
+Field Conditions:
+
+Soil:
+- Soil type: {soil_info.get('soil')}
+- Moisture: {soil_info.get('moisture')}
+- Nutrient level: {soil_info.get('nutrients')}
+- pH: {soil_info.get('pH')}
+
+Weather:
+- Temperature: {weather.get('temperature')} °C
+- Rainfall: {weather.get('rainfall')} mm
+- Humidity: {weather.get('humidity')} %
+- Wind: {weather.get('wind')} m/s
+
+Task:
+Recommend crops using scientific reasoning based on:
+1. Soil type suitability
+2. Nitrogen / nutrient level
+3. Rainfall requirement of crop
+4. Temperature range suitability
+5. Moisture compatibility
+
+Scientific Rules:
+
+- If nutrients are LOW → prefer nitrogen-efficient crops OR mention fertilizer improvement in reason.
+- If rainfall > 150 mm → prefer water-tolerant crops (e.g., paddy).
+- If rainfall < 50 mm → prefer drought-resistant crops (millets, pulses).
+- If temperature > 32°C → prefer heat-tolerant crops.
+- If temperature < 20°C → prefer cool-season crops.
+- Match soil type with suitable crops.
+- Avoid crops that mismatch rainfall, temperature, or nutrient condition.
+
+STRICT RULES:
+- Recommend 3 to 5 Indian crops (never zero).
+- Suggest 3 to 5 crops to avoid.
+- Each recommended crop must have:
+   - name
+   - score (0–100)
+- Avoid explanation outside JSON.
+- Return ONLY valid JSON.
+
+JSON FORMAT:
+{{
+  "recommended": [
+    {{
+      "name": "Crop name",
+      "score": 85
+    }}
+  ],
+  "avoided": [
+    {{
+      "crop": "Crop name",
+      "reason": "Short reason based on rainfall, temperature or nutrient mismatch"
+    }}
+  ]
+}}
+"""
+
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
+
+    raw_text = response.text.strip()
+
+    # 🔥 REMOVE MARKDOWN BLOCKS IF PRESENT
+    raw_text = re.sub(r"```json|```", "", raw_text).strip()
+
+    try:
+        data = json.loads(raw_text)
+        return data["recommended"], data["avoided"]
+
+    except Exception as e:
+        print("❌ Gemini JSON parse error:", e)
+        print("❌ Gemini raw output:", raw_text)
+
+        # Safe fallback (never empty → UI won’t break)
+        return [
+            {"name": "Millet", "score": 70},
+            {"name": "Sorghum", "score": 68},
+            {"name": "Maize", "score": 65},
+        ], [
+            {"crop": "Sugarcane", "reason": "High water requirement"},
+            {"crop": "Rice", "reason": "Weed sensitivity"},
+        ]
+import json
+import re
+import google.generativeai as genai
+
+def infer_soil_from_weed(weed):
+    prompt = f"""
+You are an expert agronomist AI. A weed named "{weed}" is detected in a farm field.
+
+Based on its presence, infer the field's soil conditions using science-based reasoning.  
+Return ONLY JSON with **concise, one-word or very short predictions** suitable for UI boxes:
+
+JSON FORMAT:
+{{
+  "soil": "Soil type, e.g., Loam, Sandy, Clay, Degraded",
+  "moisture": "Good, Moderate, Poor",
+  "nutrients": "High, Medium, Low",
+  "pH": "Acidic, Neutral, Alkaline"
+}}
+"""
+
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
+
+    raw_text = response.text.strip()
+    # Remove markdown code blocks if present
+    raw_text = re.sub(r"```json|```", "", raw_text).strip()
+
+    try:
+        # Convert AI output to Python dictionary
+        data = json.loads(raw_text)
+        # Optional: Ensure all keys exist
+        return {
+            "soil": data.get("soil", "Unknown"),
+            "moisture": data.get("moisture", "Moderate"),
+            "nutrients": data.get("nutrients", "Medium"),
+            "pH": data.get("pH", "Neutral")
+        }
+    except Exception as e:
+        print("❌ Soil inference error:", e)
+        print("❌ Raw output:", raw_text)
+        # Safe fallback
+        return {
+            "soil": "Unknown",
+            "moisture": "Moderate",
+            "nutrients": "Medium",
+            "pH": "Neutral"
+        }

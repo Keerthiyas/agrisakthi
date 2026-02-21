@@ -1,0 +1,201 @@
+{% block content %}
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main Chat Box */
+.chat-container {
+    width: 100%;
+    max-width: 480px;
+    height: 90vh;
+    background: #ffffff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #eaeaea;
+}
+
+/* Header */
+.chat-header {
+    background: #ffffff;
+    color: #1b5e20;
+    padding: 18px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid #eeeeee;
+}
+
+/* Messages Area */
+#chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Message Style */
+.message {
+    max-width: 75%;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+/* User Message */
+.user-message {
+    align-self: flex-end;
+    background: #2e7d32;
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+/* Bot Message */
+.bot-message {
+    align-self: flex-start;
+    background: #f0f2f5;
+    color: #333;
+    border-bottom-left-radius: 6px;
+}
+
+/* Input Area */
+.chat-input {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #eeeeee;
+    background: #ffffff;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid #dddddd;
+    outline: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.chat-input input:focus {
+    border-color: #2e7d32;
+}
+
+.chat-input button {
+    margin-left: 10px;
+    padding: 10px 18px;
+    border-radius: 25px;
+    border: none;
+    background: #2e7d32;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.chat-input button:hover {
+    background: #256b28;
+}
+
+/* Smooth Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bot-message ul {
+    margin: 10px 0;
+    padding-left: 18px;
+}
+
+.bot-message li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.bot-message strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #1b5e20;
+}
+</style>
+
+<div class="chat-container">
+
+    <div class="chat-header">
+        🌾 AgriSakthi Assistant
+    </div>
+
+    <div id="chat-box"></div>
+
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Ask about crops, pests, weather...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+
+<script>
+function addMessage(message, type) {
+    const chatBox = document.getElementById("chat-box");
+    const msgDiv = document.createElement("div");
+
+    msgDiv.classList.add("message");
+
+    if (type === "user") {
+        msgDiv.classList.add("user-message");
+    } else {
+        msgDiv.classList.add("bot-message");
+    }
+
+    msgDiv.innerHTML = message.replace(/\n/g, "<br>");
+    chatBox.appendChild(msgDiv);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendMessage() {
+    let input = document.getElementById("user-input");
+    let message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    // Typing indicator
+    addMessage("AgriSakthi is typing...", "bot");
+
+    fetch("/chatbot-api/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove typing indicator
+        document.getElementById("chat-box").lastChild.remove();
+
+        addMessage(data.reply, "bot");
+    });
+}
+</script>
+
+{% endblock %}

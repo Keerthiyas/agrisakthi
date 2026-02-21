@@ -642,11 +642,11 @@
 
     function setWeatherValues(data) {
       document.getElementById('temp').innerText =
-        (data && typeof data.temp !== 'undefined') ? data.temp : '--';
+        (data && typeof data.temperature !== 'undefined') ? data.temperature : '--';
       document.getElementById('humidity').innerText =
         (data && typeof data.humidity !== 'undefined') ? data.humidity : '--';
       document.getElementById('rain').innerText =
-        (data && typeof data.rain !== 'undefined') ? data.rain : '--';
+        (data && typeof data.rainfall !== 'undefined') ? data.rainfall : '--';
       document.getElementById('wind').innerText =
         (data && typeof data.wind !== 'undefined') ? data.wind : '--';
     }

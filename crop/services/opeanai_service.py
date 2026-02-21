@@ -47,7 +47,7 @@ def recommend_crop(weed_name, weather=None, season=None, extra_instructions=None
             model=os.getenv('OPENAI_MODEL', 'gpt-4'),
             messages=messages,
             max_tokens=300,
-            temperature=0.7,
+            temperature=0,
         )
         text = resp['choices'][0]['message']['content'].strip()
     except Exception as e:

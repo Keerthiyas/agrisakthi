@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSakthi AI - Smart Farming Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fadeInUp': 'fadeInUp 0.5s ease-out',
+                        'bounceGentle': 'bounceGentle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .farm-bg {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d0e8c8 25%, #b8e0b0 50%, #a0d898 75%, #90d090 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .farm-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(ellipse 2% 2% at 20% 30%, rgba(76,175,80,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse 1.5% 1.5% at 80% 70%, rgba(129,199,132,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse 1% 1% at 40% 90%, rgba(165,214,167,0.25) 0%, transparent 50%);
+            pointer-events: none;
+            animation: floatPattern 20s ease-in-out infinite;
+        }
+        @keyframes floatPattern {
+            0%, 100% { transform: translateY(0) scale(1); }
+            33% { transform: translateY(-10px) scale(1.02); }
+            66% { transform: translateY(5px) scale(0.98); }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .message-bubble {
+            animation: fadeInUp 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen farm-bg flex items-center justify-center p-4 md:p-6">
+    <!-- Agriculture Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-green-700/20 to-transparent"></div>
+        <div class="absolute top-20 left-1/4 w-24 h-24 bg-green-400/30 rounded-full blur-xl -rotate-12"></div>
+        <div class="absolute top-1/2 right-1/4 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl rotate-6 animate-pulse"></div>
+    </div>
+
+    <!-- Main Chat Container -->
+    <div class="w-full max-w-md glass-card rounded-3xl shadow-2xl relative z-10">
+        <!-- Header -->
+        <div class="bg-white/50 backdrop-blur-sm border-b border-white/30 px-8 py-6 rounded-t-3xl">
+            <div class="flex items-center justify-center space-x-3">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span class="text-2xl">🌾</span>
+                </div>
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
+                        AgriSakthi AI
+                    </h1>
+                    <p class="text-sm text-green-700/80 font-medium mt-1">Smart Farming Assistant</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chatMessages" class="h-96 md:h-[500px] overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-green-300/50 scrollbar-track-transparent">
+            <!-- Welcome Message -->
+            <div class="message-bubble bot-message max-w-[85%] bg-emerald-100/80 backdrop-blur-sm border border-emerald-200/50 rounded-2xl px-6 py-4 ml-4">
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-emerald-400/30 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                        <span class="text-xl">🌱</span>
+                    </div>
+                    <div>
+                        <p class="text-green-800 font-medium mb-1">Welcome to AgriSakthi AI! 👋</p>
+                        <p class="text-sm text-green-700 leading-relaxed">
+                            Ask me about crop recommendations, weather updates, 
+                            pest control, or government schemes. I'm here to help your farm thrive! 🚜
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="p-6 pt-0 border-t border-white/20">
+            <div class="flex space-x-3">
+                <input 
+                    type="text" 
+                    id="messageInput"
+                    class="flex-1 bg-white/70 backdrop-blur-sm border-2 border-green-200/50 focus:border-green-400 rounded-2xl px-6 py-4 text-lg placeholder-green-600/70 focus:outline-none focus:ring-4 focus:ring-green-200/50 transition-all duration-300 shadow-lg"
+                    placeholder="Ask about crops, weather, schemes..."
+                >
+                <button 
+                    id="sendButton"
+                    class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 rounded-2xl flex items-center justify-center text-white text-2xl transition-all duration-300 active:scale-95"
+                >
+                    ➤
+                </button>
+            </div>
+            <p class="text-xs text-green-600/70 text-center mt-3">Press Enter to send</p>
+        </div>
+    </div>
+
+    <script>
+        class AgriSakthiChat {
+            constructor() {
+                this.chatMessages = document.getElementById('chatMessages');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                
+                this.init();
+            }
+
+            init() {
+                // Enter key support
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Send button click
+                this.sendButton.addEventListener('click', () => {
+                    this.sendMessage();
+                });
+
+                // Auto-resize input
+                this.messageInput.addEventListener('input', () => {
+                    this.messageInput.style.height = 'auto';
+                    this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+                });
+
+                // Focus input on load
+                setTimeout(() => this.messageInput.focus(), 500);
+            }
+
+            addMessage(content, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message-bubble ${isUser ? 'user-message' : 'bot-message'} max-w-[85%] ${isUser ? 'mr-4 ml-auto' : 'ml-4'}`;
+                
+                const icon = isUser ? '👨‍🌾' : '🌱';
+                const bubbleClass = isUser ? 
+                    'bg-gradient-to-r from-green-600 to-emerald-700 text-white shadow-lg shadow-green-500/25' : 
+                    'bg-emerald-100/80 backdrop-blur-sm border border-emerald-200/50';
+
+                messageDiv.innerHTML = `
+                    <div class="flex ${isUser ? 'flex-row-reverse' : ''} items-start space-x-3 space-x-reverse">
+                        <div class="w-10 h-10 ${isUser ? 'bg-green-500/30' : 'bg-emerald-400/30'} rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                            <span class="text-xl">${icon}</span>
+                        </div>
+                        <div class="prose prose-sm ${isUser ? 'text-white' : 'text-green-800'} max-w-full">
+                            <div class="p-5 rounded-2xl ${bubbleClass} backdrop-blur-sm">
+                                ${this.parseContent(content)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.chatMessages.appendChild(messageDiv);
+                this.chatMessages.scrollTo({
+                    top: this.chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+
+                return messageDiv;
+            }
+
+            parseContent(content) {
+                // Convert newlines to <br> and add emojis
+                return content
+                    .replace(/\n/g, '<br>')
+                    .replace(/crops?|paddy|rice/gi, '$& 🌾')
+                    .replace(/weather|rain/gi, '$& ☀️🌧️')
+                    .replace(/pest|disease/gi, '$& 🐛')
+                    .replace(/scheme|subsidy/gi, '$& 💰');
+            }
+
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, true);
+                const userMessageInput = this.messageInput.value;
+                this.messageInput.value = '';
+
+                // Show typing indicator
+                const typingDiv = this.addMessage('⏳ AgriSakthi is thinking... <br> <span class="text-xs opacity-75">Analyzing farm data...</span>', false);
+                typingDiv.classList.add('opacity-70');
+
+                // Simulate API call (replace with your /chatbot-api/ endpoint)
+                await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 2000));
+
+                // Remove typing indicator
+                this.chatMessages.removeChild(typingDiv);
+
+                // Demo responses based on keywords
+                const lowerMessage = userMessageInput.toLowerCase();
+                let response = "Great question! Let me check the latest agricultural data for you. 🌱";
+                
+                if (lowerMessage.includes('crop') || lowerMessage.includes('rice')) {
+                    response = "For rice/paddy cultivation:<br>• Optimal temperature: 20-35°C ☀️<br>• Best soil: Clay loam 🌾<br>• Water requirement: 1200-1500mm 🌧️<br>• Recommended varieties for Tamil Nadu: CR1009, ADT 43";
+                } else if (lowerMessage.includes('weather')) {
+                    response = "🌤️ Current weather insights:<br>• Temperature: 28-32°C<br>• Humidity: 65-75%<br>• Ideal for most crops<br>• Light showers expected tomorrow 🌧️";
+                } else if (lowerMessage.includes('pest')) {
+                    response = "🐛 Common pest control:<br>• Neem oil spray (5ml/liter)<br>• Remove infected leaves<br>• Trichogramma egg parasite<br>• Contact local agri officer for chemicals";
+                } else if (lowerMessage.includes('scheme')) {
+                    response = "💰 Tamil Nadu Agri Schemes:<br>• PM-KISAN: ₹6000/year<br>• Kalaignar Veg Scheme: Seeds subsidy<br>• Apply via: e-Sevai centers<br>• Check: agricoop.nic.in";
+                }
+
+                // Add bot response
+                this.addMessage(response, false);
+            }
+        }
+
+        // Initialize chat when DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AgriSakthiChat();
+        });
+
+        // PWA-like features
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+</body>
+</html>

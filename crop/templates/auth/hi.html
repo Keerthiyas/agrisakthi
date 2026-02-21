@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>How AgriSakthi Works</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+
+    /* Center whole section on the page */
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 16px;
+    }
+
+    /* Title + subtitle centered */
+    .hiw-heading {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hiw-heading span {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #ecfdf3;
+      color: #15803d;
+      margin-bottom: 10px;
+    }
+
+    .hiw-heading h2 {
+      font-size: 32px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .hiw-heading p {
+      font-size: 14px;
+      color: #64748b;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    /* 2‑column layout but without any card box */
+    .how-it-works {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      max-width: 1080px;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .how-it-works {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    /* Left: main image (no box) */
+    .hiw-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #hiw-image {
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio:4 / 3.7;
+      border-radius: 28px;
+      object-fit: cover;
+      background: radial-gradient(circle at 0 0, #bbf7d0, #0f172a);
+      box-shadow:
+        0 24px 60px rgba(236, 239, 247, 0.35);
+      transition: transform 0.4s ease, opacity 0.3s ease, box-shadow 0.4s ease;
+      margin-left: 1%;
+    }
+
+    #hiw-image.animate {
+      transform: translateY(-4px) scale(1.02);
+      opacity: 0.96;
+      box-shadow:
+        0 30px 80px rgba(117, 243, 163, 0.45);
+    }
+
+    /* Right: vertical steps, centered block */
+    .hiw-right {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .hiw-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      padding-left: 4px;
+    }
+
+    .hiw-steps::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #bbf7d0, #e2e8f0);
+    }
+
+    .hiw-step {
+      position: relative;
+      padding-left: 40px;
+      padding-bottom: 24px;
+      cursor: pointer;
+    }
+
+    .hiw-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .hiw-step .dot {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 3px solid #16a34a;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px #ecfdf3;
+      transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .hiw-step h3 {
+      font-size: 17px;
+      margin: 0 0 4px;
+      color: #0f172a;
+      transition: color 0.25s ease;
+    }
+
+    .hiw-step p {
+      margin: 0;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    /* Hover + active states */
+    .hiw-step:hover .dot,
+    .hiw-step.active .dot {
+      background: #16a34a;
+      transform: scale(1.08);
+      box-shadow: 0 0 0 7px rgba(22, 163, 74, 0.25);
+    }
+
+    .hiw-step:hover h3,
+    .hiw-step.active h3 {
+      color: #16a34a;
+    }
+
+    @media (max-width: 600px) {
+      .hiw-step {
+        padding-left: 32px;
+      }
+      .hiw-steps::before {
+        left: 10px;
+      }
+      .hiw-step .dot {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Centered title block -->
+    <div class="hiw-heading">
+      
+      <h2 style="color: #16a34a;">How AgriSakthi Works</h2>
+      <p>Step‑by‑step guidance for farmers, from quick doubts to data‑driven decisions.</p>
+    </div>
+
+    <section class="how-it-works">
+      <!-- LEFT: image that changes every 5s and on hover -->
+      <div class="hiw-left">
+        <img
+          id="hiw-image"
+          src="https://images.pexels.com/photos/175389/pexels-photo-175389.jpeg?auto=compress&cs=tinysrgb&w=800"
+          alt="AgriSakthi feature image"
+        />
+      </div>
+
+      <!-- RIGHT: steps, visually centered block -->
+      <div class="hiw-right">
+        <ul class="hiw-steps">
+          <li
+            class="hiw-step active"
+            data-image="https://images.pexels.com/photos/175389/pexels-photo-175389.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Ask Anything, Anytime</h3>
+              <p>Chat in simple language to get answers about crops, soil, pests, and daily farming doubts.</p>
+            </div>
+          </li>
+
+          <li
+            class="hiw-step"
+            data-image="https://images.pexels.com/photos/2887791/pexels-photo-2887791.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Crop Disease Detection</h3>
+              <p>Upload crop images, detect diseases early with AI, and prevent major yield losses.</p>
+            </div>
+          </li>
+
+          <li
+            class="hiw-step"
+            data-image="https://images.pexels.com/photos/12762264/pexels-photo-12762264.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Weather‑Based Farming Advice</h3>
+              <p>Receive real‑time weather updates and field‑level recommendations for the next few days.</p>
+            </div>
+          </li>
+
+          <li
+            class="hiw-step"
+            data-image="https://images.pexels.com/photos/735545/pexels-photo-735545.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Live Market Prices</h3>
+              <p>See daily prices from nearby markets to decide the best time and place to sell.</p>
+            </div>
+          </li>
+
+          <li
+            class="hiw-step"
+            data-image="https://images.pexels.com/photos/3184296/pexels-photo-3184296.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Government Schemes & Alerts</h3>
+              <p>Get alerts on subsidies, crop insurance, and local government programs you can apply for.</p>
+            </div>
+          </li>
+
+          <li
+            class="hiw-step"
+            data-image="https://images.pexels.com/photos/2887790/pexels-photo-2887790.jpeg?auto=compress&cs=tinysrgb&w=800"
+          >
+            <div class="dot"></div>
+            <div class="content">
+              <h3>Smart Irrigation & Inputs</h3>
+              <p>Optimize water, fertilizer, and seeds with tailored recommendations for your field.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const steps = document.querySelectorAll(".hiw-step");
+    const img = document.getElementById("hiw-image");
+
+    // Create an array of images in the order of steps
+    const images = Array.from(steps).map((step) =>
+      step.getAttribute("data-image")
+    );
+
+    let currentIndex = 0;
+    let intervalId;
+
+    function setActiveStep(index) {
+      // remove active from all
+      steps.forEach((s) => s.classList.remove("active"));
+      const step = steps[index];
+      if (!step) return;
+      step.classList.add("active");
+
+      const newSrc = step.getAttribute("data-image");
+      if (newSrc && img.src !== newSrc) {
+        img.classList.add("animate");
+        img.src = newSrc;
+        setTimeout(() => img.classList.remove("animate"), 400);
+      }
+      currentIndex = index;
+    }
+
+    // Auto‑rotate images every 5 seconds
+    function startAutoRotate() {
+      intervalId = setInterval(() => {
+        const nextIndex = (currentIndex + 1) % steps.length;
+        setActiveStep(nextIndex);
+      }, 2000); // 5000 ms = 5 seconds [web:31][web:34]
+    }
+
+    function stopAutoRotate() {
+      if (intervalId) clearInterval(intervalId);
+    }
+
+    // Step hover: show that step and pause auto rotate while hovering
+    steps.forEach((step, index) => {
+      step.addEventListener("mouseenter", () => {
+        stopAutoRotate();
+        setActiveStep(index);
+      });
+
+      step.addEventListener("mouseleave", () => {
+        // restart rotation when mouse leaves
+        startAutoRotate();
+      });
+    });
+
+    // Initialize
+    setActiveStep(0);
+    startAutoRotate();
+  </script>
+</body>
+</html>
+
