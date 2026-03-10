@@ -55,63 +55,11 @@ IMG_SIZE = 224
 #     return render(request, 'crop/home.html')
 
 def home(request):
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('auth')  # Redirect to the new single-page auth
-
     return render(request, 'crop/home.html')
 
 
     return render(request, 'crop/home.html')
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from supabase import create_client, Client
 
-
-def auth_view(request):
-    if request.method == "POST":
-        # Check if user clicked "signup" or "login"
-        action = request.POST.get('action')  # "login" or "signup"
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        name = request.POST.get('name', '')  # Optional, only for signup
-
-        if action == "signup":
-            try:
-                # Create user in Supabase
-                supabase.auth.sign_up({
-                    "email": email,
-                    "password": password
-                })
-                messages.success(request, "Signup successful! Check your email to confirm.")
-                return redirect('auth')
-            except Exception as e:
-                messages.error(request, "Signup failed: " + str(e))
-                return redirect('auth')
-
-        elif action == "login":
-            try:
-                # Sign in user
-                response = supabase.auth.sign_in_with_password({
-                    "email": email,
-                    "password": password
-                })
-
-                # Save session
-                request.session['user_id'] = response.user.id
-                request.session['email'] = response.user.email
-                return redirect('home')
-            except Exception as e:
-                messages.error(request, "Invalid email or password")
-                return redirect('auth')
-
-    # GET request → just render the page
-    return render(request, 'auth/auth.html')
-
-# -------------------- LOGOUT --------------------
-def logout_view(request):
-    request.session.flush()
-    return redirect('auth')
 def predict_image(request):
     context = {}
 
@@ -799,8 +747,6 @@ def analyze_crop_view(request):
         )
 
        
-
-                # ✅ INSERT CROP RECOMMENDATION INTO SUPABASE
         supabase.table("crop_recommendations").insert({
             "farmer_id": request.session.get("user_id"),
             "recommended_crop": ", ".join([c["clean_name"] for c in processed_recommendations]),

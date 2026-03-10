@@ -5,7 +5,6 @@ from django.views.generic import RedirectView
 
 
 from .views import (
-auth_view,
 
 dashboard,
 get_crop_schemes,
@@ -27,7 +26,6 @@ best_scheme,
 ask_scheme,
 get_weather_api,
 analyze_crop_view,
-logout_view,
 
 )
 
@@ -59,10 +57,7 @@ path("schemes-chatbot/", schemes_chatbot, name="schemes_chatbot"),
 path("best-scheme/", best_scheme),
 
 path("ask-scheme/", ask_scheme),
-path('', auth_view, name='auth'),   # Single login/signup page
-path('home/', home, name='home'),
-path('logout/', logout_view, name='logout'),
-
+path('', home, name='home'),
 path('dashboard/', dashboard, name='dashboard'),
 path("chatbot/", main_chatbot_page, name="chatbot_page"), 
 path("chatbot-api/", main_chatbot_api, name="chatbot_api"),
